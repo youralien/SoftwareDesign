@@ -2,7 +2,7 @@
 """
 Created on Sun Feb  2 11:24:42 2014
 
-@author: YOUR NAME HERE
+@author: rlouie
 """
 
 # you may find it useful to import these variables (although you are not required to use them)
@@ -25,13 +25,30 @@ def coding_strand_to_AA(dna):
         returns: a string containing the sequence of amino acids encoded by the
                  the input DNA fragment
     """
-    
-    # YOUR IMPLEMENTATION HERE
+    dnalength = len(dna)
+    growing_amino = ''
+
+    if dnalength<3:
+        print "ERROR: Too few DNA nucleotides"
+    elif dnalength%3 != 0:
+        print "Warning: DNA sequence must be a mulltiple of 3"
+    else:
+        while len(dna) > 0:
+            for amino in codons:
+                for codon in amino:
+                    if codon == dna[:3]:
+                        growing_amino += aa[codons.index(amino)]
+                        dna = dna[3:]
+
+    return growing_amino
 
 def coding_strand_to_AA_unit_tests():
     """ Unit tests for the coding_strand_to_AA function """
         
-    # YOUR IMPLEMENTATION HERE
+    print coding_strand_to_AA("ATGCGA") == 'MR'
+    print coding_strand_to_AA("ATGCCCGCTTT") =='MPA'
+    print bool(coding_strand_to_AA("AT")) == False
+    print bool(coding_strand_to_AA("ATGC")) == False
 
 def get_reverse_complement(dna):
     """ Computes the reverse complementary sequence of DNA for the specfied DNA
@@ -41,7 +58,7 @@ def get_reverse_complement(dna):
         returns: the reverse complementary DNA sequence represented as a string
     """
     
-    # YOUR IMPLEMENTATION HERE
+    mapping = 
     
 def get_reverse_complement_unit_tests():
     """ Unit tests for the get_complement function """
