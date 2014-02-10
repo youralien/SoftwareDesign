@@ -93,7 +93,12 @@ def find_all_ORFs_oneframe(dna):
     """
      
     # YOUR IMPLEMENTATION HERE        
-        
+     
+def find_all_ORFs_oneframe_unit_tests():
+    """ Unit tests for the find_all_ORFs_oneframe function """
+
+    # YOUR IMPLEMENTATION HERE
+
 def find_all_ORFs(dna):
     """ Finds all non-nested open reading frames in the given DNA sequence in all 3
         possible frames and returns them as a list.  By non-nested we mean that if an
@@ -129,6 +134,11 @@ def find_all_ORFs_both_strands_unit_tests():
 def longest_ORF(dna):
     """ Finds the longest ORF on both strands of the specified DNA and returns it
         as a string"""
+
+    # YOUR IMPLEMENTATION HERE
+
+def longest_ORF_unit_tests():
+    """ Unit tests for the longest_ORF function """
 
     # YOUR IMPLEMENTATION HERE
 
