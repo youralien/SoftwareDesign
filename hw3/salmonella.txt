@@ -1,0 +1,7 @@
+"""
+salmonella.txt
+"""
+surface presentation of antigens [Salmonella enterica subsp. enterica serovar Typhimurium]
+ATP synthase SpaL [Salmonella enterica] >gb|EJA87721.1| ATP synthase SpaL [Salmonella enterica subsp. enterica serovar Newport str. CVM 4176] >gb|ELN93285.1| ATP synthase
+virulence-associated secretory apparatus ATP synthase [Salmonella enterica subsp. enterica serovar Paratyphi A str. ATCC 9150] >ref|YP_002143411.1| ATP synthase SpaL [Salmon
+ATP synthase SpaL [Salmonella enterica] >gb|ESG90177.1| ATP synthase SpaL [Salmonella enterica subsp. enterica serovar Indiana str. ATCC 51959]
