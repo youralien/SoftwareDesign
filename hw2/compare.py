@@ -18,3 +18,7 @@ def main():
 
 if __name__ == '__main__':
 	main()
+
+'''
+Excellent work. Having a main function seems a bit redundant
+'''

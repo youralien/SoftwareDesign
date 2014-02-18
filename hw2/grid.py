@@ -27,3 +27,6 @@ def main():
 if __name__ == '__main__':
 	main()
 
+'''
+Great work; no comments here! :-)
+'''
