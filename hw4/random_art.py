@@ -12,7 +12,7 @@ import math
 # import pygame
 
 base_fs = ["x", "y"]
-other_fs = ["prod", "avg", "cos_pi", "sin_pi",] #"sigmoid",]
+other_fs = ["prod", "avg", "cos_pi", "sin_pi", "sigmoid"]
 all_fs = base_fs + other_fs
 
 end_base = len(base_fs) - 1
@@ -55,7 +55,7 @@ def evaluate_random_function(f, x, y):
     Inputs:
         f: symbolic function 
         x: float btwn [-1,1]
-        y: float btwn [=1,1]
+        y: float btwn [-1,1]
 
     Returns:
         float btwn [-1,1]
@@ -74,8 +74,10 @@ def evaluate_random_function(f, x, y):
             return math.cos(math.pi*evaluate_random_function(f[1], x, y))
         elif f[0] == "sin_pi":
             return math.sin(math.pi*evaluate_random_function(f[1], x, y))
+        elif f[0] == "**2":
+            return evaluate_random_function(f[1], x, y)**2
         elif f[0] == "sigmoid":
-            return 1.0 / (1 + math.exp(-(evaluate_random_function(f[1], x, y))))
+            return 1.0 / (1 + math.exp(-(evaluate_random_function(f[1], x, y)))) - .5
 
 def remap_interval(val, input_interval_start, input_interval_end, output_interval_start, output_interval_end):
     """ Maps the input value that is in the interval [input_interval_start, input_interval_end]
@@ -97,9 +99,9 @@ def remap_interval(val, input_interval_start, input_interval_end, output_interva
     return percentile*(output_interval_end - output_interval_start) + output_interval_start
 
 if __name__ == "__main__":
-    fred = build_random_function(10,15)
-    fgreen = build_random_function(10,15)
-    fblue = build_random_function(10,15)
+    fred = build_random_function(5,17)
+    fgreen = build_random_function(5,17)
+    fblue = build_random_function(5,17)
 
     print "red(x,y): \n", fred
     print "green(x,y): \n", fgreen
