@@ -12,7 +12,7 @@ import math
 # import pygame
 
 base_fs = ["x", "y"]
-other_fs = ["prod", "avg", "cos_pi", "sin_pi", "sigmoid"]
+other_fs = ["prod", "avg", "cos_pi", "sin_pi", "sigmoid"]   # sigmoid is SUCH a good choice. :thumbsup:
 all_fs = base_fs + other_fs
 
 end_base = len(base_fs) - 1
@@ -49,6 +49,11 @@ def build_random_function(min_depth, max_depth):
         # we CANNOT return "x" or "y" yet
         return [other_fs[randint(0,end_other)] , build_random_function(min_depth - 1, max_depth -1), build_random_function(min_depth - 1, max_depth -1)]
 
+'''
+Interesting arrangement of base cases. Unlike most others, you saw the min_depth as the higher level base case. 
+This totally works, but I do want to raise the question of what happens in your code, specifically, if max_depth < min_depth.
+'''
+
 def evaluate_random_function(f, x, y):
     """ Evaluates a symbolic function f for x, y in [-1,1] 
 
@@ -65,7 +70,7 @@ def evaluate_random_function(f, x, y):
         return x
     elif f[0] == "y":
         return y
-    else:
+    else:   # all the if statements could be on the same level as the parent level. (ie. check for x, y, prod, avg, cos, etc.)
         if f[0] == "prod":
             return evaluate_random_function(f[1], x, y) * evaluate_random_function(f[2], x, y)
         elif f[0] == "avg":
@@ -74,7 +79,7 @@ def evaluate_random_function(f, x, y):
             return math.cos(math.pi*evaluate_random_function(f[1], x, y))
         elif f[0] == "sin_pi":
             return math.sin(math.pi*evaluate_random_function(f[1], x, y))
-        elif f[0] == "**2":
+        elif f[0] == "**2":     # you don't seem to have a square function?
             return evaluate_random_function(f[1], x, y)**2
         elif f[0] == "sigmoid":
             return 1.0 / (1 + math.exp(-(evaluate_random_function(f[1], x, y)))) - .5
@@ -108,6 +113,7 @@ if __name__ == "__main__":
     print "blue(x,y): \n", fblue
 
 
+    # this is the perfect use for auxiliary functions!
     def red(x,y): 
         val = evaluate_random_function(fred, x, y)
         return int(remap_interval(val, -1, 1, 0, 255))
@@ -122,9 +128,9 @@ if __name__ == "__main__":
 
 
     im = Image.new("RGB", (350, 350))
-    horz, vert = im.size
+    horz, vert = im.size    # great way to deal with dynamic size changes
 
-    for i in xrange(horz):
+    for i in xrange(horz):  # awesome use of generators
         x = remap_interval(i, 0, horz-1, -1, 1)
         for j in xrange(vert):
             y = remap_interval(j, 0, vert-1, -1, 1)
@@ -132,6 +138,7 @@ if __name__ == "__main__":
 
     im.save("image.bmp")
 
+    # was this your way of displaying the images?
     # pygame.init()
     # size = width,height= (im.get_rect().width,im.get_rect().height)
     # screen = pygame.display.set_mode(size)
