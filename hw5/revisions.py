@@ -1,5 +1,5 @@
 from wikitools import wiki, api
-import networkx as nx
+#import networkx as nx
 from operator import itemgetter
 from collections import Counter
 import re, random, datetime, urlparse, urllib2, simplejson, copy
@@ -306,11 +306,11 @@ def get_page_content(page_title,lang):
             rev['title'] = result['pages'][page_number]['title']
             rev['size'] = revision.get('size', 0) # Sometimes the size key is not present, so we'll set it to 0 in those cases
             rev['timestamp'] = convert_to_datetime(revision['timestamp'])
-            rev['content'] = revision.get('*',unicode()) # Sometimes content hidden, return with empty unicode string
-            rev['links'] = link_finder(rev['content'])
+            rev['content'] = revision.get('*',unicode()) # Sometimes content hidden, return with empty unicode strng
+            # rev['links'] = link_finder(rev['content'])
             rev['username'] = revision['user']
             rev['userid'] = revision['userid']
             rev['revid'] = revision['revid']
-            revisions_dict[revision['revid']] = rev
+            revisions_dict[revision['timestamp']] = rev
     return revisions_dict
 
