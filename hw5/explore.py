@@ -22,8 +22,8 @@ def grabarticlelinkless(articlename):
     print artstr
     return artstr
 
-def sentimentreturn(articlename)
-    art = grabarticle(articlename)
+def sentimentreturn(articlename):
+    art = w.search(articlename)
     g = get_page_content(art.title,"en")
     keys = sorted(g)
     lenkey = len(keys)/49
@@ -31,5 +31,4 @@ def sentimentreturn(articlename)
     a = list()
     for i in keys:
         a.append((sentiment(g[i]['content']),i))
-    print a
     return a
