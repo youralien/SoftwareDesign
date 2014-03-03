@@ -36,7 +36,7 @@ def SentimentTimePlot(article_title):
 		tl.set_color('r')
 
 	plt.title('{} Sentiment Analysis History'.format(article_title))	
-	ax2.legend(['article_length'], loc=4)
+	ax2.legend(['article_length'], loc=8)
 	plt.show()
 
 def SentimentArticleLength(article_title):
@@ -64,7 +64,7 @@ if __name__ == '__main__':
 	"Franklin W. Olin College of Engineering",
 	"Japanese American internment",
 	]
-	SentimentTimePlot(articles[0])
+	SentimentTimePlot("Internet")
 	# SentimentArticleLength('Franklin W. Olin College of Engineering')
 	
 
