@@ -29,7 +29,7 @@ def is_ip(ip_string, masked=False):
 def convert_to_datetime(string):
     dt = datetime.datetime.strptime(string,'%Y-%m-%dT%H:%M:%SZ')
     return dt
-    
+        
 def convert_from_datetime(dt):
     string = dt.strftime('%Y%m%d%H%M%S')
     return string
@@ -256,6 +256,8 @@ def get_page_revisions(article_title,dt_start,dt_end,lang):
                 revisions = list()
     return revisions
 
+#print get_page_revisions('Olin College',convert_to_datetime("2007-06-26T19:05:06Z"),convert_to_datetime("2013-06-26T19:05:06Z"),'en')
+
 def make_page_alters(revisions):
     '''
     Input:
@@ -313,4 +315,5 @@ def get_page_content(page_title,lang):
             rev['revid'] = revision['revid']
             revisions_dict[revision['timestamp']] = rev
     return revisions_dict
-
+get_page_content('Franklin W. Olin College of Engineering','en') 
+print "DONE!"
