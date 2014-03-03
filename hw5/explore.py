@@ -1,6 +1,7 @@
 
 from pattern.web import *
 from pattern.en import *
+from revisions import *
 
 
 w = Wikipedia()
