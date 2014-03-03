@@ -23,12 +23,20 @@ def grabarticlelinkless(articlename):
     return artstr
 
 def sentimentreturn(articlename):
-    art = w.search(articlename)
-    g = get_page_content(art.title,"en")
+    # art = w.search(articlename)
+    g = get_page_content(articlename,"en")
     keys = sorted(g)
-    lenkey = len(keys)/49
+    # lenkey = len(keys)/49
+    lenkey = 1
     keys = [j for j in keys if keys.index(j)%lenkey==0 or keys.index(j)==len(keys)-1]
     a = list()
+    start_epoch = convert_datetime_to_epoch(convert_to_datetime(keys[0]))
     for i in keys:
-        a.append((sentiment(g[i]['content']),i))
+        date = convert_to_datetime(i)
+        date = int(convert_datetime_to_epoch(date) - start_epoch)
+        a.append((sentiment(g[i]['content']),date))
     return a
+
+
+if __name__ == '__main__':
+    print sentimentreturn('Olin College')
