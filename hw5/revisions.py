@@ -315,5 +315,3 @@ def get_page_content(page_title,lang):
             rev['revid'] = revision['revid']
             revisions_dict[revision['timestamp']] = rev
     return revisions_dict
-get_page_content('Franklin W. Olin College of Engineering','en') 
-print "DONE!"
