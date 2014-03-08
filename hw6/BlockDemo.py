@@ -11,10 +11,11 @@ import random
 import math
 import time
 
+SQUARELENGTH = 50  
 
 class PWFModel:
     """This class encodes the game state"""
-        
+     
     
     def __init__ (self):
         #self.bricks = []
@@ -27,7 +28,7 @@ class PWFModel:
                 
         for x in range(60,1000,60):
             for y in range(60,600,60):
-                block = Block((195,25,25),50,50,x,y)
+                block = Block((195,25,25),SQUARELENGTH,SQUARELENGTH,x,y)
                 self.blocks.add(block)
                 self.everything.add(block)
         self.paddle = Paddle((255,255,255),20,100,200,450)
@@ -39,14 +40,19 @@ class PWFModel:
 class Block(pygame.sprite.Sprite):
     """This class encodes the state of the block"""
     def __init__ (self,color,width,height,x,y):
-        #Call the parent class (Sprite) constructor
+        #Call the parent class (Sprite) constructor     
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface([width,height])
-        self.image.fill(color)
+        #self.image = pygame.Surface([width,height])
+        self.image = pygame.image.load('images/brickwall.jpg')
+        #self.image.fill(color)
+        self.image = pygame.transform.scale(self.image, (SQUARELENGTH, SQUARELENGTH))
+        self.image.set_colorkey((255,255,255))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
 ###
+
+        # Upload Player Image, Resize, Set Background to Transparent
 class Brick:
     """This class encodes the state of a brick in a game"""
     def __init__(self,color,height,width,x,y):
