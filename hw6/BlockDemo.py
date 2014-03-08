@@ -21,10 +21,8 @@ WHITE = (255, 255, 255)
 class PWFModel:
     """This class encodes the game state"""
      
-    
     def __init__ (self):
         self.blocks = pygame.sprite.Group()
-        self.players = pygame.sprite.Group()
         self.everything = pygame.sprite.Group()
         
         self._populateBlocks()
@@ -60,12 +58,13 @@ class PWFModel:
                 self.everything.add(block)
     
     def _populatePlayers(self):
-        for x in [SQUARELENGTH, WIDTH - 2*SQUARELENGTH]:
-            for y in [SQUARELENGTH, HEIGHT - 2*SQUARELENGTH]:
-                player = Player(x,y,bombs=1,lives=3)
-                self.players.add(player)
-                self.everything.add(player)
-
+        # player number determined by starting quadrant
+        self.player1 = Player(WIDTH-2*SQUARELENGTH,SQUARELENGTH,bombs=1,lives=3)
+        self.player2 = Player(SQUARELENGTH,SQUARELENGTH,bombs=1,lives=3)
+        self.player3 = Player(SQUARELENGTH,HEIGHT-2*SQUARELENGTH,bombs=1,lives=3)
+        self.player4 = Player(WIDTH-2*SQUARELENGTH,HEIGHT-2*SQUARELENGTH,bombs=1,lives=3)
+        for player in [self.player1,self.player2,self.player3,self.player4]:
+            self.everything.add(player)
 
 # --- Classes
 class BlockPermanent(pygame.sprite.Sprite):
