@@ -28,6 +28,7 @@ class PWFModel:
         self.everything = pygame.sprite.Group()
         
         self._populateBlocks()
+        self._populatePlayers()
 
     def update(self):
         pass
@@ -59,9 +60,11 @@ class PWFModel:
                 self.everything.add(block)
     
     def _populatePlayers(self):
-        for x in [2*SQUARELENGTH, WIDTH - 2*SQUARELENGTH]:
-            for y in [2*SQUARELENGTH, HEIGHT - 2*SQUARELENGTH]:
+        for x in [SQUARELENGTH, WIDTH - 2*SQUARELENGTH]:
+            for y in [SQUARELENGTH, HEIGHT - 2*SQUARELENGTH]:
                 player = Player(x,y,bombs=1,lives=3)
+                self.players.add(player)
+                self.everything.add(player)
 
 
 # --- Classes
@@ -106,6 +109,8 @@ class Player(pygame.sprite.Sprite):
         self.image.set_colorkey((255,255,255))
 
         self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
         
 class PyGameWindowView:
     """View of Brickbreaker rendered in a PyGame Window"""
