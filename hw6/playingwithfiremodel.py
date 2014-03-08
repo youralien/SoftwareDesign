@@ -16,8 +16,8 @@ class Playingwithfiremodel:
     """ Encodes the game state of Brick Breaker """
     def __init__(self):
         
-        self.Player = Player(5,5,50,50,1,3)
-        self.Bomb = Bomb(5,5,50,50,100)
+        self.Player = Player(5,5,55,55,1,3)
+        self.Bomb = Bomb(5,5,55,55,100)
     
     def update(self):
         self.player.update()
@@ -74,13 +74,13 @@ class PyGameKeyboardController:
     def handle_pygame_event(self, event):
         
         if event.key == pygame.K_LEFT:
-            self.model.player.x += -50.0
+            self.model.player.x += -55.0
         if event.key == pygame.K_RIGHT:
-            self.model.player.x += 50.0
+            self.model.player.x += 55.0
         if event.type == KEYDOWN:
-            self.model.player.y += 50.0
+            self.model.player.y += 55.0
         if event.type == KEYUP:
-            self.model.player.y += -50.0
+            self.model.player.y += -55.0
         if event.key == pygame.K_KP_DIVIDE:
             self.model.player.bombs += -1.0
             self.model.bomb=activate #I don't know the notation for this
