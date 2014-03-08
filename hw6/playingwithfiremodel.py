@@ -18,7 +18,8 @@ class Playingwithfiremodel:
         
         self.Player = Player(5,5,55,55,1,3)
         self.Bomb = Bomb(5,5,55,55,100)
-    
+        
+
     def update(self):
         self.player.update()
         self.bomb.update()
@@ -42,10 +43,6 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.image.set_colorkey((255,255,255))
 
         self.rect = self.image.get_rect()
-        
-    def update(self):
-        self.x += self.x
-        self.y += self.y
     
 class Bomb:
     """ Encode the state of the bomb in the Playingwithfiremodel"""
@@ -89,7 +86,27 @@ class PyGameKeyboardController:
             
             
             
-            
+if __name__ == '__main__':
+    pygame.init()
+
+    size = (1028,720)
+    screen = pygame.display.set_mode(size)
+
+    model = BrickBreakerModel()
+    view = PyGameBrickBreakerView(model,screen)
+    controller = PyGameKeyboardController(model)
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                running = False
+            controller.handle_pygame_event(event)
+        model.update()
+        view.draw()
+        time.sleep(.001)
+
+    pygame.quit()
+     
             
             
             
