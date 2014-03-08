@@ -57,13 +57,27 @@ class Bomb:
         self.expradius=expradius
     
     def update(self):
-        when t=0 to t=3: #I don't know the notation for this.
+        if t>=0 and t<=3: #I don't know the notation for this.
+            activates #I don't know the notation for this
             self.width = width
             self.length = length
-        when t>=3: #I don't know the notation for this.
+            
+        if t>3 and t<=8: #I don't know the notation for this.
             self.width+=expradius
             self.length+=expradius
         
+        if t>8:
+            deactivates
+            self.width = width
+            self.length = length 
+            
+        if player.x>=bomb.x-bomb.width and player.x<=bomb.x+bomb.width:
+            player.lives-=1
+            
+        if player.y>=bomb.y-bomb.length and player.y<=bomb.y+bomb.length:
+            player.lives-=1
+        
+        if 
         
     
 class PyGameKeyboardController:
@@ -84,6 +98,7 @@ class PyGameKeyboardController:
         if event.key == pygame.K_KP_DIVIDE:
             self.model.player.bombs += -1.0
             self.model.bomb=activate #I don't know the notation for this
+            t=0                      # Makes t=0 and starts counting
             self.model.bomb.x=player.x
             self.model.bomb.y=player.y
             
