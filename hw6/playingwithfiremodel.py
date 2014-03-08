@@ -22,9 +22,10 @@ class Playingwithfiremodel:
     def update(self):
         self.player.update()
         self.bomb.update()
+
         
-class Player:
-    """ Encode the state of the player in the Playingwithfiremodel"""
+class PlayerSprite(pygame.sprite.Sprite):
+        
     def __init__(self,x,y,width,length,bombs,lives):
         self.x = x
         self.y = y
@@ -32,8 +33,16 @@ class Player:
         self.length = length
         self.bombs=bombs
         self.lives=lives
+        # Call the parent class (Sprite) constructor
+        pygame.sprite.Sprite.__init__(self) 
+     
+        # Upload Player Image, Resize, Set Background to Transparent
+        self.image = pygame.image.load('images/player1.png')
+        self.image = pygame.transform.scale(self.image, (SQUARELENGTH, SQUARELENGTH))
+        self.image.set_colorkey((255,255,255))
+
+        self.rect = self.image.get_rect()
         
-    
     def update(self):
         self.x += self.x
         self.y += self.y
