@@ -383,16 +383,8 @@ class Bomb(pygame.sprite.Sprite):
     def update(self):
         self.time_to_detonate -= DETONATION_TICK
         if self.time_to_detonate <= 0:
-
             self.kill() 
-            Fireup=Fire(model.bomb.x,model.bomb.y-SQUARELENGTH)
-            Firedown=Fire(model.bomb.x,model.bomb.y+SQUARELENGTH)
-            Fireleft=Fire(model.bomb.x-SQUARELENGTH,model.bomb.y)
-            Fireright=Fire(model.bomb.x+SQUARELENGTH,model.bomb.y)
-            for fire in [Fireup, Firedown, Fireleft, Fireright]:
-                self.model.fires.add(fire)
-                self.model.everything.add(fire)
-            bomb.kill()
+            
 
 class Fire(pygame.sprite.Sprite):
     #set up a group for the fires after shooter and target sprites set up:
@@ -415,13 +407,11 @@ class Fire(pygame.sprite.Sprite):
         self.screen = pygame.display.get_surface()
         self.area = self.screen.get_rect()
         self.direction = direction
-        
-        self.image = pygame.image.load('images/bomb.png')
+        self.start_pointx=start_pointx
+        self.start_pointy=start_pointy
+        self.image = pygame.image.load('images/fire1.png')
         self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
         self.image.set_colorkey(WHITE)
-        #self.rect.x = start_point.x
-        #self.rect.y = start_point.y
-        self.rect.center = start_point
         self.speed = [0,1] #change trajectory by changing the speed
         
     def update(self,action):
@@ -669,15 +659,10 @@ def main():
                             bomb.time_to_detonate -= DETONATION_TICK
                             # Time to Detonate is Now!
                             if bomb.time_to_detonate <= 0:
-                                Fireup=Fire(model.bomb.x,model.bomb.y-SQUARELENGTH)
-                                Firedown=Fire(model.bomb.x,model.bomb.y+SQUARELENGTH)
-                                Fireleft=Fire(model.bomb.x-SQUARELENGTH,model.bomb.y)
-                                Fireright=Fire(model.bomb.x+SQUARELENGTH,model.bomb.y)
-                                for fire in [Fireup, Firedown, Fireleft, Fireright]:
-                                    model.fires.add(fire)
-                                    model.everything.add(fire)
+                               
                                 bomb.kill()
-                    
+                      
+               
                     
                     
                     
@@ -697,6 +682,8 @@ def main():
                             bomb = Bomb(model.player1.rect.x, model.player1.rect.y,13000,1)
                             model.bombs.add(bomb)
                             model.everything.add(bomb)
+                            
+                            
                     
                         
                     # Player 2 Actions
