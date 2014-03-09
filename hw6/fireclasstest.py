@@ -29,6 +29,8 @@ class Fire(pygame.sprite.Sprite):
     
     #may need to add a direction if the fire is treated as 4 different missiles
     def __init__ (self,imagefile,start_point,direction):
+        """direction: str ('N', 'S', 'E', 'W') """
+        
         pygame.sprite.Sprite.__init__(self)
         self.screen = pygame.display.get_surface()
         self.area = self.screen.get_rect()

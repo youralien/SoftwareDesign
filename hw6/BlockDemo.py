@@ -92,6 +92,10 @@ class PWFModel:
                     self.blocks.add(block)
                     self.everything.add(block)
         
+        # powerup
+        powerup = FeetPowerUp(2*SQUARELENGTH, SQUARELENGTH)
+        self.everything.add(powerup)
+
     def _populatePlayers(self):
         # player number determined by starting quadrant
         self.player1 = Player(WIDTH-2*SQUARELENGTH,SQUARELENGTH,bombs=1,lives=3,playeri=1)
@@ -218,10 +222,11 @@ class Bomb(pygame.sprite.Sprite):
     def update(self):
         self.time_to_detonate -= DETONATION_TICK
         if self.time_to_detonate <= 0:
-            self.kill()
+
+            self.kill() # Remove Bomb from the Game
 
         
-class feetpowerup(pygame.sprite.Sprite):
+class FeetPowerUp(pygame.sprite.Sprite):
     """makes you faster"""
     def __init__(self, x,y,):
         self.x=x
@@ -230,7 +235,7 @@ class feetpowerup(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self) 
      
         # Upload Bomb Image, Resize, Set Background to Transparent
-        self.image = pygame.image.load('images/winged-foot.jpg')
+        self.image = pygame.image.load('images/wingedfootpowerup.jpg')
         self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
         self.image.set_colorkey(WHITE)
 
@@ -239,7 +244,7 @@ class feetpowerup(pygame.sprite.Sprite):
         self.rect.y = y
         
         
-class bombpowerup(pygame.sprite.Sprite):
+class BombPowerUp(pygame.sprite.Sprite):
     """lets you plant more bombs"""
     def __init__(self, x,y,):
         self.x=x
@@ -256,7 +261,7 @@ class bombpowerup(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         
-class lighteningpowerup(pygame.sprite.Sprite):
+class LightningPowerUp(pygame.sprite.Sprite):
     """increases your bomb range"""
     def __init__(self, x,y,):
         self.x=x
@@ -265,7 +270,7 @@ class lighteningpowerup(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self) 
      
         # Upload Bomb Image, Resize, Set Background to Transparent
-        self.image = pygame.image.load('images/lightning.jpg')
+        self.image = pygame.image.load('images/lightningpowerup.jpg')
         self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
         self.image.set_colorkey(WHITE)
 
@@ -296,6 +301,7 @@ class PWFController:
             # Bomb Detonation
             if event.key == K_BOMB_TIMER:
                 self.model.bombs.update()
+                self.model.fires.update()
             
             # Player 1 Actions
             if event.key == pygame.K_LEFT:
@@ -305,12 +311,12 @@ class PWFController:
             elif event.key == pygame.K_UP:
                 self.model.player1.changespeed(0,-MOVE)
             elif event.key == pygame.K_DOWN:
-                self.model.player1.changespeed(0,MOVE)
+                self.modxel.player1.changespeed(0,MOVE)
             elif event.key == pygame.K_SLASH:
                 if self.model.player1.bombs>0:
                     self.model.player1.bombs -= 1.0
                 
-                    bomb = Bomb(self.model.player1.rect.x, self.model.player1.rect.y)
+                    bomb = Bomb(self.model.player1.rect.x, self.model.player1.rect.y,playeri=1)
                     self.model.bombs.add(bomb)
                     self.model.everything.add(bomb)
             
