@@ -361,7 +361,7 @@ class Player(pygame.sprite.Sprite):
 
 class Bomb(pygame.sprite.Sprite):
     """ Encode the state of the bomb in the Playingwithfiremodel"""
-    def __init__(self, x,y, playeri):
+    def __init__(self, x,y,time_to_detonate, playeri):
         self.x=x
         self.y=y
         self.time_to_detonate = 13 * 1000 # milliseconds
@@ -472,12 +472,12 @@ class PWFController:
             elif event.key == pygame.K_UP:
                 self.model.player1.changespeed(0,-MOVE)
             elif event.key == pygame.K_DOWN:
-                self.modxel.player1.changespeed(0,MOVE)
+                self.model.player1.changespeed(0,MOVE)
             elif event.key == pygame.K_SLASH:
                 if self.model.player1.bombs>0:
                     self.model.player1.bombs -= 1.0
                 
-                    bomb = Bomb(self.model.player1.rect.x, self.model.player1.rect.y,playeri=1)
+                    bomb = Bomb(self.model.player1.rect.x, self.model.player1.rect.y,1,13000)
                     self.model.bombs.add(bomb)
                     self.model.everything.add(bomb)
             
@@ -495,7 +495,7 @@ class PWFController:
                 if self.model.player2.bombs>0:
                     self.model.player2.bombs -= 1.0
                     
-                    bomb = Bomb(self.model.player2.rect.x, self.model.player2.rect.y)
+                    bomb = Bomb(self.model.player2.rect.x, self.model.player2.rect.y,2,13000)
                     self.model.bombs.add(bomb)
                     self.model.everything.add(bomb)
 
@@ -559,7 +559,7 @@ if __name__ == "__main__":
     # Creating the screen
     screen = pygame.display.set_mode((640, 480), 0, 32)
  
-    menu_items = ('Playing with fire', '','','','','Start', 'Quit')
+    menu_items = ('Start', 'Quit')
     funcs = {'Start': main,
              'Quit': sys.exit}
  
