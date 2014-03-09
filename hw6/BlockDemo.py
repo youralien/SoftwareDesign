@@ -22,6 +22,7 @@ HEIGHT = 780
 SQUARELENGTH = 60
 PLAYERSIZE = 50
 WHITE = (255, 255, 255)
+<<<<<<< HEAD
 
 """<<<<<<< HEAD"""
 MOVE = 6
@@ -32,6 +33,9 @@ MOVE = 6
 
 MOVE = 2
 
+=======
+MOVE = 2
+>>>>>>> 4ef02fabf3c94abd81c1c5c81dc3bbe6fda7668c
 
 
 class PWFModel:
