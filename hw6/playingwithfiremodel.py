@@ -15,14 +15,23 @@ import time
 class Playingwithfiremodel:
     """ Encodes the game state of Brick Breaker """
     def __init__(self):
-        
         self.Player = Player(5,5,55,55,1,3)
         self.Bomb = Bomb(5,5,55,55,100)
+<<<<<<< HEAD
+        self.Fire = Fire(60,5,55,55,1)
+        
+    def createbomb(self):
+        #make a list of bombs
+        pass
+    
+=======
         
 
+>>>>>>> a1b1bd9d5aaf4756946282199ec20507eaee6b2a
     def update(self):
         self.player.update()
         self.bomb.update()
+        self.fire.update()
 
         
 class PlayerSprite(pygame.sprite.Sprite):
@@ -41,27 +50,68 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.image = pygame.image.load('images/player1.png')
         self.image = pygame.transform.scale(self.image, (SQUARELENGTH, SQUARELENGTH))
         self.image.set_colorkey((255,255,255))
-
         self.rect = self.image.get_rect()
+<<<<<<< HEAD
+        
+    def update(self):
+        self.x += self.x
+        self.y += self.y
+        if player.x>=bomb.x-bomb.width and player.x<=bomb.x+bomb.width:
+            player.lives-=1
+            
+        if player.y>=bomb.y-bomb.length and player.y<=bomb.y+bomb.length:
+            player.lives-=1
+=======
+>>>>>>> a1b1bd9d5aaf4756946282199ec20507eaee6b2a
     
 class Bomb:
     """ Encode the state of the bomb in the Playingwithfiremodel"""
-    def __init__(self, x,y,width,length,expradius):
+    def __init__(self, x,y,width,length):
         self.x=x
         self.y=y
         self.width = width
         self.length = length
-        self.expradius=expradius
+
     
     def update(self):
-        when t=0 to t=3: #I don't know the notation for this.
+        self.t+=1
+        if t>=0 and t<=3: #I don't know the notation for this.
+            create bomb
+            
+        if t>3 and t<=8: #I don't know the notation for this.
+            self.width+=units*width
+            self.length+=units*length
+        
+        if t>8:
+            #deactivates
+            
+            
+        
+            
+        
+
+    
+class Fire:
+    """Encodes the state of fire from bomb"""
+    def __init__(self, x,y,width,length,units):
+        self.x=x
+        self.y=y
+        self.width = width
+        self.length = length
+        self.units=units 
+    
+    def update(self):
+        self.t+=1
+        
+        if t>3 and t<=8: #I don't know the notation for this.
+            self.width+=units*width
+            self.length+=units*length
+        
+        if t>8:
+            #deactivates
             self.width = width
-            self.length = length
-        when t>=3: #I don't know the notation for this.
-            self.width+=expradius
-            self.length+=expradius
-        
-        
+            self.length = length 
+    
     
 class PyGameKeyboardController:
     """ Manipulate game state based on keyboard input """
@@ -71,16 +121,17 @@ class PyGameKeyboardController:
     def handle_pygame_event(self, event):
         
         if event.key == pygame.K_LEFT:
-            self.model.player.x += -55.0
+            self.model.player.x -= 55.0
         if event.key == pygame.K_RIGHT:
             self.model.player.x += 55.0
         if event.type == KEYDOWN:
             self.model.player.y += 55.0
         if event.type == KEYUP:
-            self.model.player.y += -55.0
+            self.model.player.y -= 55.0
         if event.key == pygame.K_KP_DIVIDE:
-            self.model.player.bombs += -1.0
+            self.model.player.bombs -= 1.0
             self.model.bomb=activate #I don't know the notation for this
+            t=0                      # Makes t=0 and starts counting
             self.model.bomb.x=player.x
             self.model.bomb.y=player.y
             
@@ -89,7 +140,11 @@ class PyGameKeyboardController:
 if __name__ == '__main__':
     pygame.init()
 
+<<<<<<< HEAD
+    size = (640,480)
+=======
     size = (1028,720)
+>>>>>>> a1b1bd9d5aaf4756946282199ec20507eaee6b2a
     screen = pygame.display.set_mode(size)
 
     model = BrickBreakerModel()
@@ -106,9 +161,13 @@ if __name__ == '__main__':
         time.sleep(.001)
 
     pygame.quit()
+<<<<<<< HEAD
+
+=======
      
             
             
+>>>>>>> a1b1bd9d5aaf4756946282199ec20507eaee6b2a
             
             
             
