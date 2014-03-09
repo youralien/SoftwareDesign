@@ -74,7 +74,7 @@ class Bomb:
         pygame.sprite.Sprite.__init__(self) 
      
         # Upload Bomb Image, Resize, Set Background to Transparent
-        self.image = pygame.image.load('images/bombimage.jpg')
+        self.image = pygame.image.load('bomb.jpg')
         self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
         self.image.set_colorkey(WHITE)
 
@@ -87,7 +87,21 @@ class Bomb:
         
             
             
-        
+class feetpowerup:
+    def __init__(self, x,y,):
+        self.x=x
+        self.y=y
+        # Call the parent class (Sprite) constructor
+        pygame.sprite.Sprite.__init__(self) 
+     
+        # Upload Bomb Image, Resize, Set Background to Transparent
+        self.image = pygame.image.load('images/winged-foot.jpg')
+        self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
+        self.image.set_colorkey(WHITE)
+
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
             
         
 
