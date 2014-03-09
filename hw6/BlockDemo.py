@@ -385,14 +385,14 @@ class Bomb(pygame.sprite.Sprite):
         if self.time_to_detonate <= 0:
 
             self.kill() 
-            Fireup=Fire(model.bomb.x,model.bomb.y-SQUARELENGTH)
-            Firedown=Fire(model.bomb.x,model.bomb.y+SQUARELENGTH)
-            Fireleft=Fire(model.bomb.x-SQUARELENGTH,model.bomb.y)
-            Fireright=Fire(model.bomb.x+SQUARELENGTH,model.bomb.y)
-            for fire in [Fireup, Firedown, Fireleft, Fireright]:
-                self.model.fires.add(fire)
-                self.model.everything.add(fire)
-            bomb.kill()
+            # Fireup=Fire(model.bomb.x,model.bomb.y-SQUARELENGTH)
+            # Firedown=Fire(model.bomb.x,model.bomb.y+SQUARELENGTH)
+            # Fireleft=Fire(model.bomb.x-SQUARELENGTH,model.bomb.y)
+            # Fireright=Fire(model.bomb.x+SQUARELENGTH,model.bomb.y)
+            # for fire in [Fireup, Firedown, Fireleft, Fireright]:
+            #     self.model.fires.add(fire)
+            #     self.model.everything.add(fire)
+            # bomb.kill()
 
 class Fire(pygame.sprite.Sprite):
     #set up a group for the fires after shooter and target sprites set up:
@@ -417,11 +417,9 @@ class Fire(pygame.sprite.Sprite):
         self.direction = direction
         
         self.image = pygame.image.load('images/bomb.png')
-        self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
-        self.image.set_colorkey(WHITE)
-        #self.rect.x = start_point.x
-        #self.rect.y = start_point.y
-        self.rect.center = start_point
+        self.rect = self.image.get_rect()
+        self.rect.x = start_pointx
+        self.rect.y = start_pointy
         self.speed = [0,1] #change trajectory by changing the speed
         
     def update(self,action):
@@ -693,11 +691,17 @@ def main():
                     elif event.key == pygame.K_SLASH:
                         if model.player1.bombs>0:
                             model.player1.bombs -= 1.0
-                        
+                            
                             bomb = Bomb(model.player1.rect.x, model.player1.rect.y,13000,1)
                             model.bombs.add(bomb)
                             model.everything.add(bomb)
-                    
+                            Fireup=Fire(bomb.rect.x,bomb.rect.y-SQUARELENGTH, 'N')
+                            Firedown=Fire(bomb.rect.x,bomb.rect.y+SQUARELENGTH, 'S')
+                            Fireleft=Fire(bomb.rect.x-SQUARELENGTH,bomb.rect.y, 'W')
+                            Fireright=Fire(bomb.rect.x+SQUARELENGTH,bomb.rect.y, 'E')
+                            for fire in [Fireup, Firedown, Fireleft, Fireright]:
+                                model.fires.add(fire)
+                                model.everything.add(fire)
                         
                     # Player 2 Actions
                     if event.key == pygame.K_a:
