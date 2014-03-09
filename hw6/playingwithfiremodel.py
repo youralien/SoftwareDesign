@@ -17,12 +17,17 @@ class Playingwithfiremodel:
     def __init__(self):
         self.Player = Player(5,5,55,55,1,3)
         self.Bomb = Bomb(5,5,55,55,100)
+<<<<<<< HEAD
         self.Fire = Fire(60,5,55,55,1)
         
     def createbomb(self):
         #make a list of bombs
         pass
     
+=======
+        
+
+>>>>>>> a1b1bd9d5aaf4756946282199ec20507eaee6b2a
     def update(self):
         self.player.update()
         self.bomb.update()
@@ -46,6 +51,7 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (SQUARELENGTH, SQUARELENGTH))
         self.image.set_colorkey((255,255,255))
         self.rect = self.image.get_rect()
+<<<<<<< HEAD
         
     def update(self):
         self.x += self.x
@@ -55,6 +61,8 @@ class PlayerSprite(pygame.sprite.Sprite):
             
         if player.y>=bomb.y-bomb.length and player.y<=bomb.y+bomb.length:
             player.lives-=1
+=======
+>>>>>>> a1b1bd9d5aaf4756946282199ec20507eaee6b2a
     
 class Bomb:
     """ Encode the state of the bomb in the Playingwithfiremodel"""
@@ -132,7 +140,11 @@ class PyGameKeyboardController:
 if __name__ == '__main__':
     pygame.init()
 
+<<<<<<< HEAD
     size = (640,480)
+=======
+    size = (1028,720)
+>>>>>>> a1b1bd9d5aaf4756946282199ec20507eaee6b2a
     screen = pygame.display.set_mode(size)
 
     model = BrickBreakerModel()
@@ -149,7 +161,13 @@ if __name__ == '__main__':
         time.sleep(.001)
 
     pygame.quit()
+<<<<<<< HEAD
 
+=======
+     
+            
+            
+>>>>>>> a1b1bd9d5aaf4756946282199ec20507eaee6b2a
             
             
             
