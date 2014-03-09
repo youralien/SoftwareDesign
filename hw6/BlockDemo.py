@@ -10,6 +10,166 @@ http://programarcadegames.com/python_examples/f.php?file=move_with_walls_example
 
 """
 
+import sys
+import os
+import pygame
+ 
+pygame.init()
+ 
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+BLACK = (0, 0, 0)
+ 
+class MenuItem(pygame.font.Font):
+    """Menu for the game"""
+    def __init__(self, text, font=None, font_size=30,
+                 font_color=WHITE, (pos_x, pos_y)=(0, 0)):
+ 
+        pygame.font.Font.__init__(self, font, font_size)
+        self.text = text
+        self.font_size = font_size
+        self.font_color = font_color
+        self.label = self.render(self.text, 1, self.font_color)
+        self.width = self.label.get_rect().width
+        self.height = self.label.get_rect().height
+        self.dimensions = (self.width, self.height)
+        self.pos_x = pos_x
+        self.pos_y = pos_y
+        self.position = pos_x, pos_y
+ 
+    def is_mouse_selection(self, (posx, posy)):
+        if (posx >= self.pos_x and posx <= self.pos_x + self.width) and \
+            (posy >= self.pos_y and posy <= self.pos_y + self.height):
+                return True
+        return False
+ 
+    def set_position(self, x, y):
+        self.position = (x, y)
+        self.pos_x = x
+        self.pos_y = y
+ 
+    def set_font_color(self, rgb_tuple):
+        self.font_color = rgb_tuple
+        self.label = self.render(self.text, 1, self.font_color)
+ 
+class GameMenu():
+    def __init__(self, screen, items, funcs, bg_color=BLACK, font=None, font_size=30,
+                 font_color=WHITE):
+        self.screen = screen
+        self.scr_width = self.screen.get_rect().width
+        self.scr_height = self.screen.get_rect().height
+ 
+        self.bg_color = bg_color
+        self.clock = pygame.time.Clock()
+ 
+        self.funcs = funcs
+        self.items = []
+        for index, item in enumerate(items):
+            menu_item = MenuItem(item, font, font_size, font_color)
+ 
+            # t_h: total height of text block
+            t_h = len(items) * menu_item.height
+            pos_x = (self.scr_width / 2) - (menu_item.width / 2)
+            pos_y = (self.scr_height / 2) - (t_h / 2) + (index * menu_item.height)
+ 
+            menu_item.set_position(pos_x, pos_y)
+            self.items.append(menu_item)
+ 
+        self.mouse_is_visible = True
+        self.cur_item = None
+ 
+    def set_mouse_visibility(self):
+        if self.mouse_is_visible:
+            pygame.mouse.set_visible(True)
+        else:
+            pygame.mouse.set_visible(False)
+ 
+    def set_keyboard_selection(self, key):
+        """
+        Marks the MenuItem chosen via up and down keys.
+        """
+        for item in self.items:
+            # Return all to neutral
+            item.set_italic(False)
+            item.set_font_color(WHITE)
+ 
+        if self.cur_item is None:
+            self.cur_item = 0
+        else:
+            # Find the chosen item
+            if key == pygame.K_UP and \
+                    self.cur_item > 0:
+                self.cur_item -= 1
+            elif key == pygame.K_UP and \
+                    self.cur_item == 0:
+                self.cur_item = len(self.items) - 1
+            elif key == pygame.K_DOWN and \
+                    self.cur_item < len(self.items) - 1:
+                self.cur_item += 1
+            elif key == pygame.K_DOWN and \
+                    self.cur_item == len(self.items) - 1:
+                self.cur_item = 0
+ 
+        self.items[self.cur_item].set_italic(True)
+        self.items[self.cur_item].set_font_color(RED)
+ 
+        # Finally check if Enter or Space is pressed
+        if key == pygame.K_SPACE or key == pygame.K_RETURN:
+            text = self.items[self.cur_item].text
+            self.funcs[text]()
+ 
+    def set_mouse_selection(self, item, mpos):
+        """Marks the MenuItem the mouse cursor hovers on."""
+        if item.is_mouse_selection(mpos):
+            item.set_font_color(RED)
+            item.set_italic(True)
+        else:
+            item.set_font_color(WHITE)
+            item.set_italic(False)
+ 
+    def run(self):
+        mainloop = True
+        while mainloop:
+            # Limit frame speed to 50 FPS
+            self.clock.tick(50)
+ 
+            mpos = pygame.mouse.get_pos()
+ 
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    mainloop = False
+                if event.type == pygame.KEYDOWN:
+                    self.mouse_is_visible = False
+                    self.set_keyboard_selection(event.key)
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    for item in self.items:
+                        if item.is_mouse_selection(mpos):
+                            self.funcs[item.text]()
+ 
+            if pygame.mouse.get_rel() != (0, 0):
+                self.mouse_is_visible = True
+                self.cur_item = None
+ 
+            self.set_mouse_visibility()
+ 
+            # Redraw the background
+            self.screen.fill(self.bg_color)
+ 
+            for item in self.items:
+                if self.mouse_is_visible:
+                    self.set_mouse_selection(item, mpos)
+                self.screen.blit(item.label, item.position)
+ 
+            pygame.display.flip()
+ 
+
+
+
+
+
+
+
+
 import pygame
 from pygame.locals import *
 import random
@@ -201,7 +361,7 @@ class Player(pygame.sprite.Sprite):
 
 class Bomb(pygame.sprite.Sprite):
     """ Encode the state of the bomb in the Playingwithfiremodel"""
-    def __init__(self, x,y, playeri):
+    def __init__(self, x,y,time_to_detonate, playeri):
         self.x=x
         self.y=y
         self.time_to_detonate = 13 * 1000 # milliseconds
@@ -212,7 +372,7 @@ class Bomb(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self) 
      
         # Upload Bomb Image, Resize, Set Background to Transparent
-        self.image = pygame.image.load('images/bomb.jpg')
+        self.image = pygame.image.load('images/bomb.png')
         self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
         self.image.set_colorkey(WHITE)
 
@@ -291,19 +451,19 @@ class PWFView:
         pygame.display.update()
 
 class PWFController:
-    def __init__(self,model):
-        self.model = model
+        def __init__(self,model):
+           self.model = model
 
-    def handle_keyboard_event(self,event):
-        """ Handles the keyboard input for Playing with Fire 
-        """
-
-        if event.type == pygame.KEYDOWN:
-            # Bomb Detonation
+        def handle_keyboard_event(self,event):
+         """ Handles the keyboard input for Playing with Fire """
+         
+         if event.type == pygame.KEYDOWN:
+             # Bomb Detonation
+                
             if event.key == K_BOMB_TIMER:
-                self.model.bombs.update()
                 self.model.fires.update()
             
+
             # Player 1 Actions
             if event.key == pygame.K_LEFT:
                 self.model.player1.changespeed(-MOVE,0)
@@ -312,35 +472,37 @@ class PWFController:
             elif event.key == pygame.K_UP:
                 self.model.player1.changespeed(0,-MOVE)
             elif event.key == pygame.K_DOWN:
-                self.modxel.player1.changespeed(0,MOVE)
+                self.model.player1.changespeed(0,MOVE)
             elif event.key == pygame.K_SLASH:
                 if self.model.player1.bombs>0:
                     self.model.player1.bombs -= 1.0
                 
-                    bomb = Bomb(self.model.player1.rect.x, self.model.player1.rect.y,playeri=1)
+                    bomb = Bomb(self.model.player1.rect.x, self.model.player1.rect.y,13000,1)
                     self.model.bombs.add(bomb)
                     self.model.everything.add(bomb)
+
             
                 
-            # Player 2 Actions
+             # Player 2 Actions
             if event.key == pygame.K_a:
-                self.model.player2.changespeed(-MOVE,0)
+                 self.model.player2.changespeed(-MOVE,0)
             elif event.key == pygame.K_d:
-                self.model.player2.changespeed(MOVE,0)
+                 self.model.player2.changespeed(MOVE,0)
             elif event.key == pygame.K_w:
-                self.model.player2.changespeed(0,-MOVE)
+                 self.model.player2.changespeed(0,-MOVE)
             elif event.key == pygame.K_s:
-                self.model.player2.changespeed(0,MOVE)
+                 self.model.player2.changespeed(0,MOVE)
             elif event.key == pygame.K_e:
-                if self.model.player2.bombs>0:
-                    self.model.player2.bombs -= 1.0
+                 if self.model.player2.bombs>0:
+                     self.model.player2.bombs -= 1.0
                     
-                    bomb = Bomb(self.model.player2.rect.x, self.model.player2.rect.y)
-                    self.model.bombs.add(bomb)
-                    self.model.everything.add(bomb)
+
+                     bomb = Bomb(self.model.player2.rect.x, self.model.player2.rect.y,13000,2)
+                     self.model.bombs.add(bomb)
+                     self.model.everything.add(bomb)
 
 
-        elif event.type == pygame.KEYUP:
+         elif event.type == pygame.KEYUP:
             # Player 1 Reverse Actions
             if event.key == pygame.K_LEFT:
                 self.model.player1.changespeed(MOVE,0)
@@ -361,6 +523,30 @@ class PWFController:
             elif event.key == pygame.K_s:
                 self.model.player2.changespeed(0,-MOVE)
 
+                
+
+
+         elif event.type == pygame.KEYUP:
+             # Player 1 Reverse Actions
+             if event.key == pygame.K_LEFT:
+                 self.model.player1.changespeed(MOVE,0)
+             elif event.key == pygame.K_RIGHT:
+                 self.model.player1.changespeed(-MOVE,0)
+             elif event.key == pygame.K_UP:
+                 self.model.player1.changespeed(0,MOVE)
+             elif event.key == pygame.K_DOWN:
+                 self.model.player1.changespeed(0,-MOVE)
+
+             # Player 2 Reverse Actions
+             if event.key == pygame.K_a:
+                 self.model.player2.changespeed(MOVE,0)
+             elif event.key == pygame.K_d:
+                 self.model.player2.changespeed(-MOVE,0)
+             elif event.key == pygame.K_w:
+                 self.model.player2.changespeed(0,MOVE)
+             elif event.key == pygame.K_s:
+                 self.model.player2.changespeed(0,-MOVE)
+
         
 def main():
     pygame.init()
@@ -375,7 +561,7 @@ def main():
 
     model = PWFModel()    
     view = PWFView(model,screen)   
-    controller = PWFController(model)
+    # controller = PWFController(model)
     running = True
 
     while running:
@@ -383,7 +569,75 @@ def main():
             if event.type == QUIT:
                 running = False
             else:
-                controller.handle_keyboard_event(event)
+
+                # --- Controller Logic
+
+                if event.type == pygame.KEYDOWN:
+                    # Bomb Detonation
+                    if event.key == K_BOMB_TIMER:
+                        for bomb in model.bombs:
+                            # Count Down time_to_detonate
+                            bomb.time_to_detonate -= DETONATION_TICK
+                            # Time to Detonate is Now!
+                            if bomb.time_to_detonate <= 0:
+                                bomb.kill()
+                    
+                    # Player 1 Actions
+                    if event.key == pygame.K_LEFT:
+                        model.player1.changespeed(-MOVE,0)
+                    elif event.key == pygame.K_RIGHT:
+                        model.player1.changespeed(MOVE,0)
+                    elif event.key == pygame.K_UP:
+                        model.player1.changespeed(0,-MOVE)
+                    elif event.key == pygame.K_DOWN:
+                        model.player1.changespeed(0,MOVE)
+                    elif event.key == pygame.K_SLASH:
+                        if model.player1.bombs>0:
+                            model.player1.bombs -= 1.0
+                        
+                            bomb = Bomb(model.player1.rect.x, model.player1.rect.y,13000,1)
+                            model.bombs.add(bomb)
+                            model.everything.add(bomb)
+                    
+                        
+                    # Player 2 Actions
+                    if event.key == pygame.K_a:
+                        model.player2.changespeed(-MOVE,0)
+                    elif event.key == pygame.K_d:
+                        model.player2.changespeed(MOVE,0)
+                    elif event.key == pygame.K_w:
+                        model.player2.changespeed(0,-MOVE)
+                    elif event.key == pygame.K_s:
+                        model.player2.changespeed(0,MOVE)
+                    elif event.key == pygame.K_e:
+                        if model.player2.bombs>0:
+                            model.player2.bombs -= 1.0
+                            
+                            bomb = Bomb(model.player2.rect.x, model.player2.rect.y,13000,2)
+                            model.bombs.add(bomb)
+                            model.everything.add(bomb)
+
+
+                elif event.type == pygame.KEYUP:
+                    # Player 1 Reverse Actions
+                    if event.key == pygame.K_LEFT:
+                        model.player1.changespeed(MOVE,0)
+                    elif event.key == pygame.K_RIGHT:
+                        model.player1.changespeed(-MOVE,0)
+                    elif event.key == pygame.K_UP:
+                        model.player1.changespeed(0,MOVE)
+                    elif event.key == pygame.K_DOWN:
+                        model.player1.changespeed(0,-MOVE)
+
+                    # Player 2 Reverse Actions
+                    if event.key == pygame.K_a:
+                        model.player2.changespeed(MOVE,0)
+                    elif event.key == pygame.K_d:
+                        model.player2.changespeed(-MOVE,0)
+                    elif event.key == pygame.K_w:
+                        model.player2.changespeed(0,MOVE)
+                    elif event.key == pygame.K_s:
+                        model.player2.changespeed(0,-MOVE)
 
         model.update()
         view.draw()
@@ -392,7 +646,19 @@ def main():
     text = font.render("Game Over", True,(255,255,255))
     pygame.quit()
 
-if __name__ == '__main__':
-    main()
+
+    
+if __name__ == "__main__":
+    
+    # Creating the screen
+    screen = pygame.display.set_mode((640, 480), 0, 32)
+ 
+    menu_items = ('Start', 'Quit')
+    funcs = {'Start': main,
+             'Quit': sys.exit}
+ 
+    pygame.display.set_caption('PLAYING WITH FIRE')
+    gm = GameMenu(screen, funcs.keys(), funcs)
+    gm.run()
 
     
