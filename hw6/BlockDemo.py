@@ -22,16 +22,16 @@ HEIGHT = 780
 SQUARELENGTH = 60
 PLAYERSIZE = 50
 WHITE = (255, 255, 255)
-<<<<<<< HEAD
+
 """<<<<<<< HEAD"""
 MOVE = 6
 """======="""
 GRAY = (117, 117, 117)
 MOVE = 6
 """>>>>>>> 9c06251b4706f9b97ffd9f28d8cb93d9acab95aa"""
-=======
+
 MOVE = 2
->>>>>>> 40bb780747f3b119fe6131a8868dfdda38192f68
+
 
 
 class PWFModel:
@@ -43,9 +43,11 @@ class PWFModel:
     player4 = None
 
     def __init__ (self):
+        self.bombs = pygame.sprite.Group()
         self.blocks = pygame.sprite.Group()
         self.everything = pygame.sprite.Group()
         
+    
         self._populateBlocks()
         self._populatePlayers()
 
@@ -174,6 +176,26 @@ class Player(pygame.sprite.Sprite):
             elif self.change_y < 0:
                 self.rect.top = block.rect.bottom
 
+class Bomb(pygame.sprite.Sprite):
+    """ Encode the state of the bomb in the Playingwithfiremodel"""
+    def __init__(self, x,y):
+        self.x=x
+        self.y=y
+        
+       
+    # Call the parent class (Sprite) constructor
+        pygame.sprite.Sprite.__init__(self) 
+     
+        # Upload Bomb Image, Resize, Set Background to Transparent
+        self.image = pygame.image.load('images/bomb.jpg')
+        self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
+        self.image.set_colorkey(WHITE)
+
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+
 class PWFView:
     """View of Brickbreaker rendered in a PyGame Window"""
     def __init__(self,model,screen):
@@ -203,6 +225,13 @@ class PWFController:
                 self.model.player1.changespeed(0,-MOVE)
             elif event.key == pygame.K_DOWN:
                 self.model.player1.changespeed(0,MOVE)
+            elif event.key == pygame.K_KP_DIVIDE:
+                self.model.player1.bombs -= 1.0
+                bomb = Bomb(self.model.player1.rect.x, self.model.player1.rect.y)
+                self.model.bombs.add(bomb)
+                self.model.everything.add(bomb)
+            
+                
             # Player 2 Actions
             if event.key == pygame.K_a:
                 self.model.player2.changespeed(-MOVE,0)
@@ -212,6 +241,12 @@ class PWFController:
                 self.model.player2.changespeed(0,-MOVE)
             elif event.key == pygame.K_s:
                 self.model.player2.changespeed(0,MOVE)
+            elif event.key == pygame.K_e:
+                self.model.player2.bombs -= 1.0
+                bomb = Bomb(self.model.player2.rect.x, self.model.player2.rect.y)
+                self.model.bombs.add(bomb)
+                self.model.everything.add(bomb)
+
 
         elif event.type == pygame.KEYUP:
             # Player 1 Reverse Actions
