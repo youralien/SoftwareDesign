@@ -22,6 +22,7 @@ HEIGHT = 780
 SQUARELENGTH = 60
 PLAYERSIZE = 50
 WHITE = (255, 255, 255)
+GRAY = (117, 117, 117)
 MOVE = 2
 
 
@@ -41,23 +42,24 @@ class PWFModel:
         self._populatePlayers()
 
     def update(self):
-        self.player1.update(self.blocks)
+        self.player1.update()
 
     def _populateBlocks(self):
         # Populate Permanent Perimeter
         for x in range(0, WIDTH, SQUARELENGTH):
-            # side walls
+            # Side walls
             if x == 0 or x == WIDTH - SQUARELENGTH:
                 for y in range(0, HEIGHT, SQUARELENGTH):
                     block = BlockPermanent(x, y)
                     self.blocks.add(block)
                     self.everything.add(block)
-            # top/bottom walls
+            # Top/bottom walls
             else:
                 for y in [0, HEIGHT - SQUARELENGTH]:
                     block = BlockPermanent(x, y)
                     self.blocks.add(block)
                     self.everything.add(block)
+        
         # Populate Permanent Mid Grid
         for x in range(2*SQUARELENGTH,WIDTH - 2*SQUARELENGTH,SQUARELENGTH):
             if x % (2*SQUARELENGTH) == SQUARELENGTH:
@@ -77,8 +79,10 @@ class PWFModel:
         self.player4 = Player(WIDTH-2*SQUARELENGTH,HEIGHT-2*SQUARELENGTH,bombs=1,lives=3)
         for player in [self.player1,self.player2,self.player3,self.player4]:
             self.everything.add(player)
+            player.blocks = self.blocks
 
 # --- Classes
+
 class BlockPermanent(pygame.sprite.Sprite):
     """This class encodes the state of the block"""
     def __init__ (self,x,y):
@@ -108,6 +112,7 @@ class Player(pygame.sprite.Sprite):
     # Set speed vector
     change_x = 0
     change_y = 0
+    blocks = None
 
     def __init__(self,x,y,bombs,lives):
         self.bombs=bombs
@@ -127,19 +132,19 @@ class Player(pygame.sprite.Sprite):
     
     def changespeed(self, x, y):
         """ Change speed of the player """
-        self.change_x = x 
-        self.change_y = y
+        self.change_x += x 
+        self.change_y += y
 
-    def update(self, blocks):
+    def update(self):
         """ Update Player Position """
 
         # Move horizontally
         self.rect.x += self.change_x
 
         # Did the movement cause a collision with a block?
-        block_hit_list = pygame.sprite.spritecollide(self,blocks,False)
+        block_hit_list = pygame.sprite.spritecollide(self,self.blocks,False)
         for block in block_hit_list:
-            # self.rect.x -= self.change_x
+
             # Moving right
             if self.change_x > 0:
                 self.rect.right = block.rect.left
@@ -149,11 +154,10 @@ class Player(pygame.sprite.Sprite):
 
         # Move Vertically
         self.rect.y += self.change_y
-
+        
         # Did the movement cause a collision with a block?
-        lock_hit_list = pygame.sprite.spritecollide(self,blocks,False)
+        block_hit_list = pygame.sprite.spritecollide(self,self.blocks,False)
         for block in block_hit_list:
-            # self.rect.y -= self.change_y
             # Moving up
             if self.change_y > 0:
                 self.rect.bottom = block.rect.top
@@ -168,7 +172,7 @@ class PWFView:
         self.screen = screen
     
     def draw(self):
-        self.screen.fill(pygame.Color(0,0,0))
+        self.screen.fill(pygame.Color(64,64,64))
         self.model.everything.draw(self.screen)   
         pygame.display.update()
 
@@ -190,7 +194,17 @@ class PWFController:
                 self.model.player1.changespeed(0,-MOVE)
             elif event.key == pygame.K_DOWN:
                 self.model.player1.changespeed(0,MOVE)
-                 
+
+            # Player 2 Actions
+            if event.key == pygame.K_a:
+                self.model.player2.changespeed(-MOVE,0)
+            elif event.key == pygame.K_d:
+                self.model.player2.changespeed(MOVE,0)
+            elif event.key == pygame.K_s:
+                self.model.player2.changespeed(0,-MOVE)
+            elif event.key == pygame.K_w:
+                self.model.player2.changespeed(0,MOVE)
+            
         elif event.type == pygame.KEYUP:
             # Player 1 Reverse Actions
             if event.key == pygame.K_LEFT:
@@ -202,8 +216,15 @@ class PWFController:
             elif event.key == pygame.K_DOWN:
                 self.model.player1.changespeed(0,0)
 
-        
-
+            # Player 2 Reverse Actions
+            if event.key == pygame.K_a:
+                self.model.player2.changespeed(0,0)
+            elif event.key == pygame.K_d:
+                self.model.player2.changespeed(0,0)
+            elif event.key == pygame.K_s:
+                self.model.player2.changespeed(0,0)
+            elif event.key == pygame.K_w:
+                self.model.player2.changespeed(0,0)
 def main():
     pygame.init()
     screen = pygame.display.set_mode((WIDTH,HEIGHT))
@@ -220,8 +241,27 @@ def main():
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
-            else:
-                controller.handle_keyboard_event(event)
+            elif event.type == pygame.KEYDOWN:
+                # Player 1 Actions
+                if event.key == pygame.K_LEFT:
+                    model.player1.changespeed(-MOVE,0)
+                elif event.key == pygame.K_RIGHT:
+                    model.player1.changespeed(MOVE,0)
+                elif event.key == pygame.K_UP:
+                    model.player1.changespeed(0,-MOVE)
+                elif event.key == pygame.K_DOWN:
+                    model.player1.changespeed(0,MOVE)
+                 
+            elif event.type == pygame.KEYUP:
+                # Player 1 Reverse Actions
+                if event.key == pygame.K_LEFT:
+                    model.player1.changespeed(MOVE,0)
+                elif event.key == pygame.K_RIGHT:
+                    model.player1.changespeed(-MOVE,0)
+                elif event.key == pygame.K_UP:
+                    model.player1.changespeed(0,MOVE)
+                elif event.key == pygame.K_DOWN:
+                    model.player1.changespeed(0,-MOVE)
 
         model.update()
         view.draw()
