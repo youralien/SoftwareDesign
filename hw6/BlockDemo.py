@@ -336,7 +336,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.x += self.change_x
 
         # Did the movement cause a collision with a block?
-        block_hit_list = pygame.sprite.spritecollide(self,self.blocks,False)
+        block_hit_list = pygame.sprite.spritecollide(self,self.blocks,True)
         for block in block_hit_list:
 
             # Moving right

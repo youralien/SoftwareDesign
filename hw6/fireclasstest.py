@@ -36,7 +36,8 @@ class Fire(pygame.sprite.Sprite):
         self.area = self.screen.get_rect()
         self.direction = direction
         
-        self.image.self.rect = load_image(imagefile,-1)
+        self.image = pygame.image.load(imagefile)
+        self.rect = pygame.image.get_rect()
         #self.rect.x = start_point.x
         #self.rect.y = start_point.y
         self.rect.center = start_point
