@@ -66,24 +66,25 @@ class PlayerSprite(pygame.sprite.Sprite):
     
 class Bomb:
     """ Encode the state of the bomb in the Playingwithfiremodel"""
-    def __init__(self, x,y,width,length):
+    def __init__(self, x,y):
         self.x=x
         self.y=y
-        self.width = width
-        self.length = length
+       
+    # Call the parent class (Sprite) constructor
+        pygame.sprite.Sprite.__init__(self) 
+     
+        # Upload Bomb Image, Resize, Set Background to Transparent
+        self.image = pygame.image.load('images/bombimage.jpg')
+        self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
+        self.image.set_colorkey(WHITE)
+
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
 
     
     def update(self):
-        self.t+=1
-        if t>=0 and t<=3: #I don't know the notation for this.
-            create bomb
-            
-        if t>3 and t<=8: #I don't know the notation for this.
-            self.width+=units*width
-            self.length+=units*length
         
-        if t>8:
-            #deactivates
             
             
         
@@ -99,6 +100,9 @@ class Fire:
         self.width = width
         self.length = length
         self.units=units 
+        
+        
+        
     
     def update(self):
         self.t+=1
@@ -112,7 +116,23 @@ class Fire:
             self.width = width
             self.length = length 
     
-    
+
+def __init__(self,x,y,bombs,lives):
+        self.bombs=bombs
+        self.lives=lives
+
+        # Call the parent class (Sprite) constructor
+        pygame.sprite.Sprite.__init__(self) 
+     
+        # Upload Player Image, Resize, Set Background to Transparent
+        self.image = pygame.image.load('images/player1.png')
+        self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
+        self.image.set_colorkey(WHITE)
+
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        
 class PyGameKeyboardController:
     """ Manipulate game state based on keyboard input """
     def __init__(self, model):
