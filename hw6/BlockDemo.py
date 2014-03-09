@@ -41,6 +41,7 @@ class PWFModel:
 
     def __init__ (self):
         self.bombs = pygame.sprite.Group()
+        self.fires = pygame.sprite.Group()
         self.players = pygame.sprite.Group()
         self.blocks = pygame.sprite.Group()
         self.everything = pygame.sprite.Group()
