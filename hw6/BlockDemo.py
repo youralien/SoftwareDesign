@@ -189,6 +189,7 @@ class Bomb(pygame.sprite.Sprite):
         self.rect.y = y
         
 class feetpowerup(pygame.sprite.Sprite):
+    """makes you faster"""
     def __init__(self, x,y,):
         self.x=x
         self.y=y
@@ -206,6 +207,7 @@ class feetpowerup(pygame.sprite.Sprite):
         
         
 class bombpowerup(pygame.sprite.Sprite):
+    """lets you plant more bombs"""
     def __init__(self, x,y,):
         self.x=x
         self.y=y
@@ -220,7 +222,23 @@ class bombpowerup(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        
+class lighteningpowerup(pygame.sprite.Sprite):
+    """increases your bomb range"""
+    def __init__(self, x,y,):
+        self.x=x
+        self.y=y
+        # Call the parent class (Sprite) constructor
+        pygame.sprite.Sprite.__init__(self) 
+     
+        # Upload Bomb Image, Resize, Set Background to Transparent
+        self.image = pygame.image.load('images/lightning.jpg')
+        self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
+        self.image.set_colorkey(WHITE)
 
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
 
 class PWFView:
     """View of Brickbreaker rendered in a PyGame Window"""
