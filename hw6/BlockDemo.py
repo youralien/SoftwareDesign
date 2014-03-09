@@ -24,6 +24,10 @@ PLAYERSIZE = 50
 WHITE = (255, 255, 255)
 GRAY = (117, 117, 117)
 MOVE = 6
+DETONATION_TICK = 100
+
+# Set Event IDs
+K_BOMB_TIMER = 25
 
 
 
@@ -37,6 +41,7 @@ class PWFModel:
 
     def __init__ (self):
         self.bombs = pygame.sprite.Group()
+        self.players = pygame.sprite.Group()
         self.blocks = pygame.sprite.Group()
         self.everything = pygame.sprite.Group()
         
@@ -45,8 +50,8 @@ class PWFModel:
         self._populatePlayers()
 
     def update(self):
-        self.player1.update()
-        self.player2.update()
+        self.players.update()
+        self.bombs.update()
 
     def _populateBlocks(self):
         # Populate Permanent Perimeter
@@ -89,11 +94,12 @@ class PWFModel:
         
     def _populatePlayers(self):
         # player number determined by starting quadrant
-        self.player1 = Player(WIDTH-2*SQUARELENGTH,SQUARELENGTH,bombs=1,lives=3)
-        self.player2 = Player(SQUARELENGTH,SQUARELENGTH,bombs=1,lives=3)
-        self.player3 = Player(SQUARELENGTH,HEIGHT-2*SQUARELENGTH,bombs=1,lives=3)
-        self.player4 = Player(WIDTH-2*SQUARELENGTH,HEIGHT-2*SQUARELENGTH,bombs=1,lives=3)
+        self.player1 = Player(WIDTH-2*SQUARELENGTH,SQUARELENGTH,bombs=1,lives=3,playeri=1)
+        self.player2 = Player(SQUARELENGTH,SQUARELENGTH,bombs=1,lives=3,playeri=2)
+        self.player3 = Player(SQUARELENGTH,HEIGHT-2*SQUARELENGTH,bombs=1,lives=3,playeri=3)
+        self.player4 = Player(WIDTH-2*SQUARELENGTH,HEIGHT-2*SQUARELENGTH,bombs=1,lives=3,playeri=4)
         for player in [self.player1,self.player2,self.player3,self.player4]:
+            self.players.add(player)
             self.everything.add(player)
             player.blocks = self.blocks
 
@@ -130,15 +136,22 @@ class Player(pygame.sprite.Sprite):
     change_y = 0
     blocks = None
 
-    def __init__(self,x,y,bombs,lives):
+    def __init__(self,x,y,bombs,lives,playeri):
+        """
+        bombs: integer
+        lives: integer
+        playeri: 1,2,3, or 4
+        """
         self.bombs=bombs
         self.lives=lives
 
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self) 
      
-        # Upload Player Image, Resize, Set Background to Transparent
-        self.image = pygame.image.load('images/player1.png')
+        # Upload Player Image, 
+        self.image = pygame.image.load('images/p{}.png'.format(playeri))
+        
+        # Resize, Set Background to Transparent
         self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
         self.image.set_colorkey(WHITE)
 
@@ -183,9 +196,11 @@ class Player(pygame.sprite.Sprite):
 
 class Bomb(pygame.sprite.Sprite):
     """ Encode the state of the bomb in the Playingwithfiremodel"""
-    def __init__(self, x,y):
+    def __init__(self, x,y, playeri):
         self.x=x
         self.y=y
+        self.time_to_detonate = 13 * 1000 # milliseconds
+        self.playeri = playeri
         
        
     # Call the parent class (Sprite) constructor
@@ -199,6 +214,12 @@ class Bomb(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
+    def update(self):
+        self.time_to_detonate -= DETONATION_TICK
+        if self.time_to_detonate <= 0:
+            self.kill()
+
         
 class feetpowerup(pygame.sprite.Sprite):
     """makes you faster"""
@@ -272,6 +293,10 @@ class PWFController:
         """
 
         if event.type == pygame.KEYDOWN:
+            # Bomb Detonation
+            if event.key == K_BOMB_TIMER:
+                self.model.bombs.update()
+            
             # Player 1 Actions
             if event.key == pygame.K_LEFT:
                 self.model.player1.changespeed(-MOVE,0)
@@ -337,6 +362,10 @@ def main():
     # initialize font; must be called after 'pygame.init()' 
     font = pygame.font.Font(None, 36)
     pygame.display.set_caption("PLAYING WITH FIRE")
+
+    # event is called every 100 milliseconds
+    pygame.time.set_timer(K_BOMB_TIMER,DETONATION_TICK)
+
     model = PWFModel()    
     view = PWFView(model,screen)   
     controller = PWFController(model)
