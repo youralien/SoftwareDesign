@@ -3,6 +3,11 @@
 Created on Fri Mar  7 20:44:17 2014
 
 @author: jwei
+
+Wall Collision Code Adapted from:
+http://programarcadegames.com/python_examples/f.php?file=move_with_walls_example.py
+
+
 """
 
 import pygame
@@ -15,12 +20,19 @@ import time
 WIDTH = 1140
 HEIGHT = 780
 SQUARELENGTH = 60
+PLAYERSIZE = 50
 WHITE = (255, 255, 255)
+MOVE = 2
 
 
 class PWFModel:
     """This class encodes the game state"""
-     
+    
+    player1 = None
+    player2 = None
+    player3 = None
+    player4 = None
+
     def __init__ (self):
         self.blocks = pygame.sprite.Group()
         self.everything = pygame.sprite.Group()
@@ -29,7 +41,7 @@ class PWFModel:
         self._populatePlayers()
 
     def update(self):
-        pass
+        self.player1.update(self.blocks)
 
     def _populateBlocks(self):
         # Populate Permanent Perimeter
@@ -92,10 +104,12 @@ class BlockDestroyable(pygame.sprite.Sprite):
         self.rect.y = y
 
 class Player(pygame.sprite.Sprite):
-        
+    
+    # Set speed vector
+    change_x = 0
+    change_y = 0
+
     def __init__(self,x,y,bombs,lives):
-        self.x = x
-        self.y = y
         self.bombs=bombs
         self.lives=lives
 
@@ -104,14 +118,50 @@ class Player(pygame.sprite.Sprite):
      
         # Upload Player Image, Resize, Set Background to Transparent
         self.image = pygame.image.load('images/player1.png')
-        self.image = pygame.transform.scale(self.image, (SQUARELENGTH, SQUARELENGTH))
-        self.image.set_colorkey((255,255,255))
+        self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
+        self.image.set_colorkey(WHITE)
 
         self.rect = self.image.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
-        
-class PyGameWindowView:
+        self.rect.x = x
+        self.rect.y = y
+    
+    def changespeed(self, x, y):
+        """ Change speed of the player """
+        self.change_x = x 
+        self.change_y = y
+
+    def update(self, blocks):
+        """ Update Player Position """
+
+        # Move horizontally
+        self.rect.x += self.change_x
+
+        # Did the movement cause a collision with a block?
+        block_hit_list = pygame.sprite.spritecollide(self,blocks,False)
+        for block in block_hit_list:
+            # self.rect.x -= self.change_x
+            # Moving right
+            if self.change_x > 0:
+                self.rect.right = block.rect.left
+            # Moving left
+            elif self.change_x < 0:
+                self.rect.left = block.rect.right
+
+        # Move Vertically
+        self.rect.y += self.change_y
+
+        # Did the movement cause a collision with a block?
+        lock_hit_list = pygame.sprite.spritecollide(self,blocks,False)
+        for block in block_hit_list:
+            # self.rect.y -= self.change_y
+            # Moving up
+            if self.change_y > 0:
+                self.rect.bottom = block.rect.top
+            # Moving down
+            elif self.change_y < 0:
+                self.rect.top = block.rect.bottom
+
+class PWFView:
     """View of Brickbreaker rendered in a PyGame Window"""
     def __init__(self,model,screen):
         self.model = model
@@ -128,24 +178,41 @@ class PWFController:
 
     def handle_keyboard_event(self,event):
         """ Handles the keyboard input for Playing with Fire 
-        """        
-        if event.type !=KEYDOWN:
-            pass
-        if event.key == pygame.K_LEFT:
-            self.model.paddle.vx += -1.0
-        if event.key == pygame.K_RIGHT:
-            self.model.paddle.vx += 1.0       
-if __name__ == '__main__':
+        """
+
+        if event.type == pygame.KEYDOWN:
+            # Player 1 Actions
+            if event.key == pygame.K_LEFT:
+                self.model.player1.changespeed(-MOVE,0)
+            elif event.key == pygame.K_RIGHT:
+                self.model.player1.changespeed(MOVE,0)
+            elif event.key == pygame.K_UP:
+                self.model.player1.changespeed(0,-MOVE)
+            elif event.key == pygame.K_DOWN:
+                self.model.player1.changespeed(0,MOVE)
+                 
+        elif event.type == pygame.KEYUP:
+            # Player 1 Reverse Actions
+            if event.key == pygame.K_LEFT:
+                self.model.player1.changespeed(0,0)
+            elif event.key == pygame.K_RIGHT:
+                self.model.player1.changespeed(0,0)
+            elif event.key == pygame.K_UP:
+                self.model.player1.changespeed(0,0)
+            elif event.key == pygame.K_DOWN:
+                self.model.player1.changespeed(0,0)
+
+        
+
+def main():
     pygame.init()
-    size = (WIDTH,HEIGHT)
-    screen = pygame.display.set_mode(size)
+    screen = pygame.display.set_mode((WIDTH,HEIGHT))
+
     # initialize font; must be called after 'pygame.init()' 
     font = pygame.font.Font(None, 36)
     pygame.display.set_caption("PLAYING WITH FIRE")
-    
-
     model = PWFModel()    
-    view = PyGameWindowView(model,screen)   
+    view = PWFView(model,screen)   
     controller = PWFController(model)
     running = True
 
@@ -153,10 +220,16 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
-            if event.type == KEYDOWN:
+            else:
                 controller.handle_keyboard_event(event)
+
         model.update()
         view.draw()
         time.sleep(.001)
     text = font.render("Game Over", True,(255,255,255))
     pygame.quit()
+
+if __name__ == '__main__':
+    main()
+
+    
