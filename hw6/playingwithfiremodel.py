@@ -56,7 +56,7 @@ class PlayerSprite(pygame.sprite.Sprite):
     def update(self):
         self.x += self.x
         self.y += self.y
-        if player.x>=bomb.x-bomb.width and player.x<=bomb.x+bomb.width:
+        if player1.x>=bomb.x-bomb.width and player.x<=bomb.x+bomb.width:
             player.lives-=1
             
         if player.y>=bomb.y-bomb.length and player.y<=bomb.y+bomb.length:
