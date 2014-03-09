@@ -68,13 +68,25 @@ class PWFModel:
         for x in range(2*SQUARELENGTH,WIDTH - 2*SQUARELENGTH,SQUARELENGTH):
             if x % (2*SQUARELENGTH) == SQUARELENGTH:
                 continue
-            for y in range(0,HEIGHT,60):
+            for y in range(0,HEIGHT,SQUARELENGTH):
                 if y % (2*SQUARELENGTH) == SQUARELENGTH:
                     continue
                 block = BlockPermanent(x,y)
                 self.blocks.add(block)
                 self.everything.add(block)
-    
+                
+        # Populate BlockDestroyable
+        for x in range(2*SQUARELENGTH,WIDTH - 2*SQUARELENGTH,SQUARELENGTH):
+            for y in range(2*SQUARELENGTH,HEIGHT-2*SQUARELENGTH,SQUARELENGTH):
+                if x % (2*SQUARELENGTH) != SQUARELENGTH and y % (2*SQUARELENGTH) != SQUARELENGTH:
+                    continue
+            
+                a=random.choice([True, False])
+                if a==True:
+                    block = BlockDestroyable(x,y)
+                    self.blocks.add(block)
+                    self.everything.add(block)
+        
     def _populatePlayers(self):
         # player number determined by starting quadrant
         self.player1 = Player(WIDTH-2*SQUARELENGTH,SQUARELENGTH,bombs=1,lives=3)
@@ -104,7 +116,7 @@ class BlockDestroyable(pygame.sprite.Sprite):
     def __init__ (self,x,y):
         #Call the parent class (Sprite) constructor     
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('images/brickwall.jpg')
+        self.image = pygame.image.load('images/woodenbox.jpg')
         self.image = pygame.transform.scale(self.image, (SQUARELENGTH, SQUARELENGTH))
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()
