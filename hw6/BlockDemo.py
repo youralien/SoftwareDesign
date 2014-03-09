@@ -22,7 +22,6 @@ HEIGHT = 780
 SQUARELENGTH = 60
 PLAYERSIZE = 50
 WHITE = (255, 255, 255)
-GRAY = (117, 117, 117)
 MOVE = 2
 
 
@@ -43,6 +42,7 @@ class PWFModel:
 
     def update(self):
         self.player1.update()
+        self.player2.update()
 
     def _populateBlocks(self):
         # Populate Permanent Perimeter
@@ -194,37 +194,38 @@ class PWFController:
                 self.model.player1.changespeed(0,-MOVE)
             elif event.key == pygame.K_DOWN:
                 self.model.player1.changespeed(0,MOVE)
-
             # Player 2 Actions
             if event.key == pygame.K_a:
                 self.model.player2.changespeed(-MOVE,0)
             elif event.key == pygame.K_d:
                 self.model.player2.changespeed(MOVE,0)
-            elif event.key == pygame.K_s:
-                self.model.player2.changespeed(0,-MOVE)
             elif event.key == pygame.K_w:
+                self.model.player2.changespeed(0,-MOVE)
+            elif event.key == pygame.K_s:
                 self.model.player2.changespeed(0,MOVE)
-            
+
         elif event.type == pygame.KEYUP:
             # Player 1 Reverse Actions
             if event.key == pygame.K_LEFT:
-                self.model.player1.changespeed(0,0)
+                self.model.player1.changespeed(MOVE,0)
             elif event.key == pygame.K_RIGHT:
-                self.model.player1.changespeed(0,0)
+                self.model.player1.changespeed(-MOVE,0)
             elif event.key == pygame.K_UP:
-                self.model.player1.changespeed(0,0)
+                self.model.player1.changespeed(0,MOVE)
             elif event.key == pygame.K_DOWN:
-                self.model.player1.changespeed(0,0)
+                self.model.player1.changespeed(0,-MOVE)
 
             # Player 2 Reverse Actions
             if event.key == pygame.K_a:
-                self.model.player2.changespeed(0,0)
+                self.model.player2.changespeed(MOVE,0)
             elif event.key == pygame.K_d:
-                self.model.player2.changespeed(0,0)
-            elif event.key == pygame.K_s:
-                self.model.player2.changespeed(0,0)
+                self.model.player2.changespeed(-MOVE,0)
             elif event.key == pygame.K_w:
-                self.model.player2.changespeed(0,0)
+                self.model.player2.changespeed(0,MOVE)
+            elif event.key == pygame.K_s:
+                self.model.player2.changespeed(0,-MOVE)
+
+        
 def main():
     pygame.init()
     screen = pygame.display.set_mode((WIDTH,HEIGHT))
@@ -241,27 +242,8 @@ def main():
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
-            elif event.type == pygame.KEYDOWN:
-                # Player 1 Actions
-                if event.key == pygame.K_LEFT:
-                    model.player1.changespeed(-MOVE,0)
-                elif event.key == pygame.K_RIGHT:
-                    model.player1.changespeed(MOVE,0)
-                elif event.key == pygame.K_UP:
-                    model.player1.changespeed(0,-MOVE)
-                elif event.key == pygame.K_DOWN:
-                    model.player1.changespeed(0,MOVE)
-                 
-            elif event.type == pygame.KEYUP:
-                # Player 1 Reverse Actions
-                if event.key == pygame.K_LEFT:
-                    model.player1.changespeed(MOVE,0)
-                elif event.key == pygame.K_RIGHT:
-                    model.player1.changespeed(-MOVE,0)
-                elif event.key == pygame.K_UP:
-                    model.player1.changespeed(0,MOVE)
-                elif event.key == pygame.K_DOWN:
-                    model.player1.changespeed(0,-MOVE)
+            else:
+                controller.handle_keyboard_event(event)
 
         model.update()
         view.draw()
