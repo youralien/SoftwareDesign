@@ -22,20 +22,9 @@ HEIGHT = 780
 SQUARELENGTH = 60
 PLAYERSIZE = 50
 WHITE = (255, 255, 255)
-<<<<<<< HEAD
-
-"""<<<<<<< HEAD"""
-MOVE = 6
-"""======="""
 GRAY = (117, 117, 117)
 MOVE = 6
-""">>>>>>> 9c06251b4706f9b97ffd9f28d8cb93d9acab95aa"""
 
-MOVE = 2
-
-=======
-MOVE = 2
->>>>>>> 4ef02fabf3c94abd81c1c5c81dc3bbe6fda7668c
 
 
 class PWFModel:
@@ -79,13 +68,25 @@ class PWFModel:
         for x in range(2*SQUARELENGTH,WIDTH - 2*SQUARELENGTH,SQUARELENGTH):
             if x % (2*SQUARELENGTH) == SQUARELENGTH:
                 continue
-            for y in range(0,HEIGHT,60):
+            for y in range(0,HEIGHT,SQUARELENGTH):
                 if y % (2*SQUARELENGTH) == SQUARELENGTH:
                     continue
                 block = BlockPermanent(x,y)
                 self.blocks.add(block)
                 self.everything.add(block)
-    
+                
+        # Populate BlockDestroyable
+        for x in range(2*SQUARELENGTH,WIDTH - 2*SQUARELENGTH,SQUARELENGTH):
+            for y in range(2*SQUARELENGTH,HEIGHT-2*SQUARELENGTH,SQUARELENGTH):
+                if x % (2*SQUARELENGTH) != SQUARELENGTH and y % (2*SQUARELENGTH) != SQUARELENGTH:
+                    continue
+            
+                a=random.choice([True, False])
+                if a==True:
+                    block = BlockDestroyable(x,y)
+                    self.blocks.add(block)
+                    self.everything.add(block)
+        
     def _populatePlayers(self):
         # player number determined by starting quadrant
         self.player1 = Player(WIDTH-2*SQUARELENGTH,SQUARELENGTH,bombs=1,lives=3)
@@ -115,7 +116,7 @@ class BlockDestroyable(pygame.sprite.Sprite):
     def __init__ (self,x,y):
         #Call the parent class (Sprite) constructor     
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('images/brickwall.jpg')
+        self.image = pygame.image.load('images/woodenbox.jpg')
         self.image = pygame.transform.scale(self.image, (SQUARELENGTH, SQUARELENGTH))
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()
@@ -198,7 +199,58 @@ class Bomb(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        
+class feetpowerup(pygame.sprite.Sprite):
+    """makes you faster"""
+    def __init__(self, x,y,):
+        self.x=x
+        self.y=y
+        # Call the parent class (Sprite) constructor
+        pygame.sprite.Sprite.__init__(self) 
+     
+        # Upload Bomb Image, Resize, Set Background to Transparent
+        self.image = pygame.image.load('images/winged-foot.jpg')
+        self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
+        self.image.set_colorkey(WHITE)
 
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        
+        
+class bombpowerup(pygame.sprite.Sprite):
+    """lets you plant more bombs"""
+    def __init__(self, x,y,):
+        self.x=x
+        self.y=y
+        # Call the parent class (Sprite) constructor
+        pygame.sprite.Sprite.__init__(self) 
+     
+        # Upload Bomb Image, Resize, Set Background to Transparent
+        self.image = pygame.image.load('images/bombpowerup.jpg')
+        self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
+        self.image.set_colorkey(WHITE)
+
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        
+class lighteningpowerup(pygame.sprite.Sprite):
+    """increases your bomb range"""
+    def __init__(self, x,y,):
+        self.x=x
+        self.y=y
+        # Call the parent class (Sprite) constructor
+        pygame.sprite.Sprite.__init__(self) 
+     
+        # Upload Bomb Image, Resize, Set Background to Transparent
+        self.image = pygame.image.load('images/lightning.jpg')
+        self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
+        self.image.set_colorkey(WHITE)
+
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
 
 class PWFView:
     """View of Brickbreaker rendered in a PyGame Window"""
@@ -229,11 +281,13 @@ class PWFController:
                 self.model.player1.changespeed(0,-MOVE)
             elif event.key == pygame.K_DOWN:
                 self.model.player1.changespeed(0,MOVE)
-            elif event.key == pygame.K_KP_DIVIDE:
-                self.model.player1.bombs -= 1.0
-                bomb = Bomb(self.model.player1.rect.x, self.model.player1.rect.y)
-                self.model.bombs.add(bomb)
-                self.model.everything.add(bomb)
+            elif event.key == pygame.K_SLASH:
+                if self.model.player1.bombs>0:
+                    self.model.player1.bombs -= 1.0
+                
+                    bomb = Bomb(self.model.player1.rect.x, self.model.player1.rect.y)
+                    self.model.bombs.add(bomb)
+                    self.model.everything.add(bomb)
             
                 
             # Player 2 Actions
@@ -246,10 +300,12 @@ class PWFController:
             elif event.key == pygame.K_s:
                 self.model.player2.changespeed(0,MOVE)
             elif event.key == pygame.K_e:
-                self.model.player2.bombs -= 1.0
-                bomb = Bomb(self.model.player2.rect.x, self.model.player2.rect.y)
-                self.model.bombs.add(bomb)
-                self.model.everything.add(bomb)
+                if self.model.player2.bombs>0:
+                    self.model.player2.bombs -= 1.0
+                    
+                    bomb = Bomb(self.model.player2.rect.x, self.model.player2.rect.y)
+                    self.model.bombs.add(bomb)
+                    self.model.everything.add(bomb)
 
 
         elif event.type == pygame.KEYUP:
@@ -309,6 +365,7 @@ def main():
         model.update()
         view.draw()
         time.sleep(.001)
+        
     text = font.render("Game Over", True,(255,255,255))
     pygame.quit()
 
