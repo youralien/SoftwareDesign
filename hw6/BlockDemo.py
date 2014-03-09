@@ -82,7 +82,7 @@ class PWFModel:
                     continue
             
                 a=random.choice([True, False])
-                if True:
+                if a==True:
                     block = BlockDestroyable(x,y)
                     self.blocks.add(block)
                     self.everything.add(block)
