@@ -281,6 +281,19 @@ def main():
     # initialize font; must be called after 'pygame.init()' 
     font = pygame.font.Font(None, 36)
     pygame.display.set_caption("PLAYING WITH FIRE")
+    
+    # Set an Event ID
+    K_BOMB_TIMER = 25
+
+    # event is called every 123 milliseconds
+    pygame.time.Clock.set_timer(K_BOMB_TIMER,123)
+
+    # In the handle_keyboard_event
+    if event.type == K_BOMB_TIMER:
+        # subtract 123 ms from the bomb's detonation time.
+        # In Bomb, when timer runs out, detonate
+
+
     model = PWFModel()    
     view = PWFView(model,screen)   
     controller = PWFController(model)
