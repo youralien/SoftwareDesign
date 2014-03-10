@@ -12,7 +12,10 @@ One player has the controller WSAD and E for bombing
 
 The other player has the controller updownleftright and / for bombing
 
-Blow up crates that are in your way, but be careful! Don't walk into the line of fire or a stray bullet.
+Blow up crates and opponents that are in your way, but be careful! Don't walk into the line of fire or a stray bullet.
+
+When a bomb is dropped, run away. The bomb has a fire range of 3 blocks in each direction. If you are in the line of fire,
+you lose a life!
 
 Player 1 Controls:
 
