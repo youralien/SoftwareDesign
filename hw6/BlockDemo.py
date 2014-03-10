@@ -332,6 +332,9 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         """ Update Player Position """
 
+        if self.lives == 0:
+            self.kill()
+
         # Move horizontally
         self.rect.x += self.change_x
 
@@ -440,7 +443,7 @@ class Fire(pygame.sprite.Sprite):
         """
         # Did the movement cause a collision with a block?
         block_hit_list = pygame.sprite.spritecollide(self,self.model.blocks,False)
-        player_hit_list = pygame.sprite.spritecollide(self,self.model.players, False)
+        player_hit_list = pygame.sprite.spritecollide(self,self.model.players, True)
         
         # Move the Bullet
         if self.direction == "N":
@@ -491,7 +494,10 @@ class Fire(pygame.sprite.Sprite):
                     #time.sleep(1)
                 #else:
                     self.kill()
-            
+        
+        # Take a life away from Players hit by Bombs    
+        for player in player_hit_list:
+            player.lives -= 1
 
         
 class FeetPowerUp(pygame.sprite.Sprite):
