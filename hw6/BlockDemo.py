@@ -384,10 +384,10 @@ class Bomb(pygame.sprite.Sprite):
     def update(self,model):
         self.time_to_detonate -= DETONATION_TICK
         if self.time_to_detonate <= 0:
-            Fireup=Fire(model,self.rect.x,self.rect.y-SQUARELENGTH, 'N')
-            Firedown=Fire(model,self.rect.x,self.rect.y+SQUARELENGTH, 'S')
-            Fireleft=Fire(model,self.rect.x-SQUARELENGTH,self.rect.y, 'W')
-            Fireright=Fire(model,self.rect.x+SQUARELENGTH,self.rect.y, 'E')
+            Fireup=Fire(model,self.rect.x,self.rect.y-SQUARELENGTH, 'N', self.playeri)
+            Firedown=Fire(model,self.rect.x,self.rect.y+SQUARELENGTH, 'S', self.playeri)
+            Fireleft=Fire(model,self.rect.x-SQUARELENGTH,self.rect.y, 'W', self.playeri)
+            Fireright=Fire(model,self.rect.x+SQUARELENGTH,self.rect.y, 'E', self.playeri)
             for fire in [Fireup, Firedown, Fireleft, Fireright]:
                 model.fires.add(fire)
                 model.everything.add(fire)
@@ -409,8 +409,11 @@ class Fire(pygame.sprite.Sprite):
     blocks = pygame.sprite.Group()
 
     #may need to add a direction if the fire is treated as 4 different missiles
-    def __init__ (self,model,start_pointx,start_pointy,direction):
-        """direction: str ('N', 'S', 'E', 'W') """
+    def __init__ (self,model,start_pointx,start_pointy,direction, playeri):
+        """
+        direction: str ('N', 'S', 'E', 'W') 
+        playeri: int (1,2,3,4)
+        """
 
         pygame.sprite.Sprite.__init__(self)
         self.screen = pygame.display.get_surface()
@@ -418,7 +421,7 @@ class Fire(pygame.sprite.Sprite):
         self.direction = direction
         self.model = model
 
-        self.image = pygame.image.load('images/fire1.png')
+        self.image = pygame.image.load('images/fire{}.png'.format(playeri))
         self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
         if self.direction == 'N' or self.direction == 'S':
             self.image = pygame.transform.rotate(self.image, 90)
@@ -436,6 +439,9 @@ class Fire(pygame.sprite.Sprite):
         """
         # Did the movement cause a collision with a block?
         block_hit_list = pygame.sprite.spritecollide(self,self.model.blocks,False)
+        player_hit_list = pygame.sprite.spritecollide(self,self.model.players, False)
+        
+        # Move the Bullet
         if self.direction == "N":
             if self.dN < self.fire_range:
                 self.rect.y += self.vN*SQUARELENGTH
@@ -599,7 +605,7 @@ def main():
                             
                             bomb = Bomb(model.player1.rect.x, model.player1.rect.y,13000,1)
                             model.bombs.add(bomb)
-                            model.everything.add(bomb)              
+                            model.everything.add(bomb)            
 
                         
                     # Player 2 Actions
@@ -615,7 +621,7 @@ def main():
                         if model.player2.bombs>0:
                             # model.player2.bombs -= 1.0
                             
-                            bomb = Bomb(model.player2.rect.x, model.player2.rect.y,13000,1)
+                            bomb = Bomb(model.player2.rect.x, model.player2.rect.y,13000,2)
                             model.bombs.add(bomb)
                             model.everything.add(bomb)
 
