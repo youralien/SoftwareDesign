@@ -450,23 +450,40 @@ class Fire(pygame.sprite.Sprite):
             if self.dN < self.fire_range:
                 self.rect.y += self.vN*SQUARELENGTH
                 self.dN+=SQUARELENGTH
+        if self.dN == self.fire_range:
+                self.kill()
+                print ("I'M IN THE FIRERANGE")
+                return
         if self.direction == "S":
             if self.dS < self.fire_range:
                 self.rect.y += self.vS*SQUARELENGTH
                 self.dS+=SQUARELENGTH
+            if self.dN == self.fire_range:
+                self.kill()
+                print ("I'M IN THE FIRERANGE")
+                return
         if self.direction == "W":
             if self.dW < self.fire_range:
                 self.rect.x += self.vW*SQUARELENGTH
                 self.dW+=SQUARELENGTH
+            if self.dN == self.fire_range:
+                self.kill()
+                print ("I'M IN THE FIRERANGE")
+                return
         if self.direction == "E":
             if self.dE < self.fire_range:
                 self.rect.x += self.vE*SQUARELENGTH
                 self.dE+=SQUARELENGTH
+            if self.dN == self.fire_range:
+                self.kill()
+                print ("I'M IN THE FIRERANGE")
+                return
                 
         if self.rect.left < 0 or self.rect.right > self.area.width or self.rect.top < 0 or self.rect.bottom > self.area.height:
             self.kill()
 
         for block in block_hit_list:
+            print ("I AM HERE")
             if self.direction == "N":
                 if isinstance(block, BlockDestroyable):
                     block.kill()
