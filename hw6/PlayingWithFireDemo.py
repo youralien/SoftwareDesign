@@ -227,6 +227,9 @@ class PWFModel:
     player4 = None
 
     def __init__ (self):
+        """
+        Initializes all the sprite groups
+        """
         self.bombs = pygame.sprite.Group()
         self.fires = pygame.sprite.Group()
         self.players = pygame.sprite.Group()
@@ -238,12 +241,19 @@ class PWFModel:
         self._populatePlayers()
 
     def update(self):
+        """
+        Update calls the updates of all the sprite groups (players,bombs,fires)
+        """
         self.players.update()
         self.bombs.update(self)
         self.fires.update()
 
 
     def _populateBlocks(self):
+        """
+        Populates board with permanent "barrier" blocks as well as destroyable blocks and also
+        sets up the players in their four corners
+        """
         # Populate Permanent Perimeter
         for x in range(0, WIDTH, SQUARELENGTH):
             # Side walls
@@ -377,7 +387,6 @@ class Player(pygame.sprite.Sprite):
 
         block_hit_list = pygame.sprite.spritecollide(self,self.blocks,True)
         for block in block_hit_list:
-
             # Moving right
             if self.change_x > 0:
                 self.rect.right = block.rect.left
@@ -429,8 +438,6 @@ class Bomb(pygame.sprite.Sprite):
 
             self.kill() 
 
-            
-
             # Fireup=Fire(model.bomb.x,model.bomb.y-SQUARELENGTH)
             # Firedown=Fire(model.bomb.x,model.bomb.y+SQUARELENGTH)
             # Fireleft=Fire(model.bomb.x-SQUARELENGTH,model.bomb.y)
@@ -468,11 +475,12 @@ class Fire(pygame.sprite.Sprite):
     dE = 0
     blocks = pygame.sprite.Group()
 
-    #may need to add a direction if the fire is treated as 4 different missiles
     def __init__ (self,model,start_pointx,start_pointy,direction, playeri):
         """
-        direction: str ('N', 'S', 'E', 'W') 
-        playeri: int (1,2,3,4)
+        __init__ takes in model, a set of x and y positions, a direction, and a player
+        
+        direction: str ('N', 'S', 'W', 'E') 
+        playeri: int (1,2,3,4) 
         """
 
         pygame.sprite.Sprite.__init__(self)
@@ -499,6 +507,7 @@ class Fire(pygame.sprite.Sprite):
 
         self.image = pygame.image.load('images/fire{}.png'.format(playeri))
         self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
+        #Rotate the horizontal "fire" for N and S facing ones
         if self.direction == 'N' or self.direction == 'S':
             self.image = pygame.transform.rotate(self.image, 90)
         
@@ -512,7 +521,24 @@ class Fire(pygame.sprite.Sprite):
         
     def update(self):
         """
-            INSERT DOCSTRING HERE
+        Update checks for collisions between fire and blocks/players, updates the bullet position, and
+        checks if fire_range has been reached (and if so removes the fire). If a collision has occurred,
+        Update checks for blockDestroyables and removes both parties in the collision from the game.
+        
+        LONG EXPLANATION:
+            Update checks to see if a collision between the fire and blocks or players has occurred.
+            It then moves on to check the movement of the bullet. Each fire can move 3 blocks in one
+            direction. The movement is updated depending on the direction of the specific bullet.
+            
+            When the fire_range has been reached, the fire is removed from all the groups.
+            
+            A check is also implemented to destroy any fires that go beyond the game field.
+            
+            After the fires move, its location is checked with the blocks in the block_hit_list.
+            If the block and fire are in contact, both are destroyed if the block is an instance
+            of a blockDestroyable.
+            
+            If the player had been hit, the life of that player deteriorates by 0.01.
         """
         # Did the movement cause a collision with a block?
         block_hit_list = pygame.sprite.spritecollide(self,self.model.blocks,False)
@@ -580,7 +606,9 @@ class Fire(pygame.sprite.Sprite):
             player.lives -= .01
 
 # --- Power Up Item Classes
-
+"""
+These were classes made that, due to time constraints, did not make it into the game.
+"""
 class FeetPowerUp(pygame.sprite.Sprite):
     """makes you faster"""
     def __init__(self, x,y,):
