@@ -186,7 +186,7 @@ GRAY = (117, 117, 117)
 MOVE = 6
 DETONATION_TICK = 100
 
-# Set Event IDs
+# Set Event ID's
 K_BOMB_TIMER = 25
 
 
@@ -213,6 +213,7 @@ class PWFModel:
     def update(self):
         self.players.update()
         self.bombs.update()
+        self.fires.update()
 
     def _populateBlocks(self):
         # Populate Permanent Perimeter
@@ -364,7 +365,7 @@ class Bomb(pygame.sprite.Sprite):
     def __init__(self, x,y,time_to_detonate, playeri):
         self.x=x
         self.y=y
-        self.time_to_detonate = 13 * 1000 # milliseconds
+        self.time_to_detonate = 13 * 1000 # milliseconself.dS
         self.playeri = playeri
         
        
@@ -385,20 +386,11 @@ class Bomb(pygame.sprite.Sprite):
         if self.time_to_detonate <= 0:
             self.kill() 
 
-            # Fireup=Fire(model.bomb.x,model.bomb.y-SQUARELENGTH)
-            # Firedown=Fire(model.bomb.x,model.bomb.y+SQUARELENGTH)
-            # Fireleft=Fire(model.bomb.x-SQUARELENGTH,model.bomb.y)
-            # Fireright=Fire(model.bomb.x+SQUARELENGTH,model.bomb.y)
-            # for fire in [Fireup, Firedown, Fireleft, Fireright]:
-            #     self.model.fires.add(fire)
-            #     self.model.everything.add(fire)
-            # bomb.kill()
-
 
 class Fire(pygame.sprite.Sprite):
     #set up a group for the fires after shooter and target sprites set up:
     fires = pygame.sprite.RenderUpdates()
-    fire_range = SQUARELENGTH
+    fire_range = SQUARELENGTH * 2
     vN = -1
     vS = 1
     vW = -1
@@ -410,13 +402,14 @@ class Fire(pygame.sprite.Sprite):
     blocks = pygame.sprite.Group()
 
     #may need to add a direction if the fire is treated as 4 different missiles
-    def __init__ (self,start_pointx,start_pointy,direction):
+    def __init__ (self,model,start_pointx,start_pointy,direction):
         """direction: str ('N', 'S', 'E', 'W') """
 
         pygame.sprite.Sprite.__init__(self)
         self.screen = pygame.display.get_surface()
         self.area = self.screen.get_rect()
         self.direction = direction
+        self.model = model
 
         self.image = pygame.image.load('images/fire1.png')
         self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
@@ -430,25 +423,25 @@ class Fire(pygame.sprite.Sprite):
         self.rect.y = start_pointy
         self.speed = [0,1] #change trajectory by changing the speed
         
-    def update(self,action):
+    def update(self):
         # Did the movement cause a collision with a block?
-        block_hit_list = pygame.sprite.spritecollide(self,self.blocks,True)
+        block_hit_list = pygame.sprite.spritecollide(self,self.model.blocks,False)
         if self.direction == "N":
-            if dN < fire_range:
-                self.rect.y += vN*SQUARELENGTH
-                dN+=SQUARELENGTH
+            if self.dN < self.fire_range:
+                self.rect.y += self.vN*SQUARELENGTH
+                self.dN+=SQUARELENGTH
         if self.direction == "S":
-            if dS < fire_range:
-                self.rect.y += vN*SQUARELENGTH
-                dS+=SQUARELENGTH
+            if self.dS < self.fire_range:
+                self.rect.y += self.vS*SQUARELENGTH
+                self.dS+=SQUARELENGTH
         if self.direction == "W":
-            if dW < fire_range:
-                self.rect.x += vW*SQUARELENGTH
-                dW+=SQUARELENGTH
+            if self.dW < self.fire_range:
+                self.rect.x += self.vW*SQUARELENGTH
+                self.dW+=SQUARELENGTH
         if self.direction == "E":
-            if dE < fire_range:
-                self.rect.x += vE*SQUARELENGTH
-                dE+=SQUARELENGTH
+            if self.dE < self.fire_range:
+                self.rect.x += self.vE*SQUARELENGTH
+                self.dE+=SQUARELENGTH
                 
             if self.rect.left < 0 or self.rect.right > self.area.width or self.rect.top < 0 or self.rect.bottom > self.area.height:
                 self.kill()
@@ -545,103 +538,6 @@ class PWFView:
         self.model.everything.draw(self.screen)   
         pygame.display.update()
 
-class PWFController:
-        def __init__(self,model):
-           self.model = model
-
-        def handle_keyboard_event(self,event):
-         """ Handles the keyboard input for Playing with Fire """
-         
-         if event.type == pygame.KEYDOWN:
-             # Bomb Detonation
-                
-            if event.key == K_BOMB_TIMER:
-                self.model.fires.update()
-            
-
-            # Player 1 Actions
-            if event.key == pygame.K_LEFT:
-                self.model.player1.changespeed(-MOVE,0)
-            elif event.key == pygame.K_RIGHT:
-                self.model.player1.changespeed(MOVE,0)
-            elif event.key == pygame.K_UP:
-                self.model.player1.changespeed(0,-MOVE)
-            elif event.key == pygame.K_DOWN:
-                self.model.player1.changespeed(0,MOVE)
-            elif event.key == pygame.K_SLASH:
-                if self.model.player1.bombs>0:
-                    self.model.player1.bombs -= 1.0
-                
-                    bomb = Bomb(self.model.player1.rect.x, self.model.player1.rect.y,13000,1)
-                    self.model.bombs.add(bomb)
-                    self.model.everything.add(bomb)
-
-            
-                
-             # Player 2 Actions
-            if event.key == pygame.K_a:
-                 self.model.player2.changespeed(-MOVE,0)
-            elif event.key == pygame.K_d:
-                 self.model.player2.changespeed(MOVE,0)
-            elif event.key == pygame.K_w:
-                 self.model.player2.changespeed(0,-MOVE)
-            elif event.key == pygame.K_s:
-                 self.model.player2.changespeed(0,MOVE)
-            elif event.key == pygame.K_e:
-                 if self.model.player2.bombs>0:
-                     self.model.player2.bombs -= 1.0
-                    
-
-                     bomb = Bomb(self.model.player2.rect.x, self.model.player2.rect.y,13000,2)
-                     self.model.bombs.add(bomb)
-                     self.model.everything.add(bomb)
-
-
-         elif event.type == pygame.KEYUP:
-            # Player 1 Reverse Actions
-            if event.key == pygame.K_LEFT:
-                self.model.player1.changespeed(MOVE,0)
-            elif event.key == pygame.K_RIGHT:
-                self.model.player1.changespeed(-MOVE,0)
-            elif event.key == pygame.K_UP:
-                self.model.player1.changespeed(0,MOVE)
-            elif event.key == pygame.K_DOWN:
-                self.model.player1.changespeed(0,-MOVE)
-
-            # Player 2 Reverse Actions
-            if event.key == pygame.K_a:
-                self.model.player2.changespeed(MOVE,0)
-            elif event.key == pygame.K_d:
-                self.model.player2.changespeed(-MOVE,0)
-            elif event.key == pygame.K_w:
-                self.model.player2.changespeed(0,MOVE)
-            elif event.key == pygame.K_s:
-                self.model.player2.changespeed(0,-MOVE)
-
-                
-
-
-         elif event.type == pygame.KEYUP:
-             # Player 1 Reverse Actions
-             if event.key == pygame.K_LEFT:
-                 self.model.player1.changespeed(MOVE,0)
-             elif event.key == pygame.K_RIGHT:
-                 self.model.player1.changespeed(-MOVE,0)
-             elif event.key == pygame.K_UP:
-                 self.model.player1.changespeed(0,MOVE)
-             elif event.key == pygame.K_DOWN:
-                 self.model.player1.changespeed(0,-MOVE)
-
-             # Player 2 Reverse Actions
-             if event.key == pygame.K_a:
-                 self.model.player2.changespeed(MOVE,0)
-             elif event.key == pygame.K_d:
-                 self.model.player2.changespeed(-MOVE,0)
-             elif event.key == pygame.K_w:
-                 self.model.player2.changespeed(0,MOVE)
-             elif event.key == pygame.K_s:
-                 self.model.player2.changespeed(0,-MOVE)
-
         
 def main():
     pygame.init()
@@ -651,7 +547,7 @@ def main():
     font = pygame.font.Font(None, 36)
     pygame.display.set_caption("PLAYING WITH FIRE")
 
-    # event is called every 100 milliseconds
+    # event is called every 100 milliseconself.dS
     pygame.time.set_timer(K_BOMB_TIMER,DETONATION_TICK)
 
     model = PWFModel()    
@@ -679,9 +575,6 @@ def main():
                                 bomb.kill()
                       
                
-                    
-                    
-                    
                     # Player 1 Actions
                     if event.key == pygame.K_LEFT:
                         model.player1.changespeed(-MOVE,0)
@@ -699,10 +592,10 @@ def main():
                             model.bombs.add(bomb)
                             model.everything.add(bomb)
 
-                            Fireup=Fire(bomb.rect.x,bomb.rect.y-SQUARELENGTH, 'N')
-                            Firedown=Fire(bomb.rect.x,bomb.rect.y+SQUARELENGTH, 'S')
-                            Fireleft=Fire(bomb.rect.x-SQUARELENGTH,bomb.rect.y, 'W')
-                            Fireright=Fire(bomb.rect.x+SQUARELENGTH,bomb.rect.y, 'E')
+                            Fireup=Fire(model,bomb.rect.x,bomb.rect.y-SQUARELENGTH, 'N')
+                            Firedown=Fire(model,bomb.rect.x,bomb.rect.y+SQUARELENGTH, 'S')
+                            Fireleft=Fire(model,bomb.rect.x-SQUARELENGTH,bomb.rect.y, 'W')
+                            Fireright=Fire(model,bomb.rect.x+SQUARELENGTH,bomb.rect.y, 'E')
                             for fire in [Fireup, Firedown, Fireleft, Fireright]:
                                 model.fires.add(fire)
                                 model.everything.add(fire)
