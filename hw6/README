@@ -2,7 +2,8 @@ Playing with Fire - Inspired by the original Playing with Fire and Bomberman
 A Game Made By: Ryan Louie, Julian Morris, and Jennifer Wei
 
 Set-up:
-To play this game, pygame must be installed. To do this, use the terminal and type in: sudo apt-get install python-pygame. No other installations are needed.
+To play this game, pygame must be installed. To do this, use the terminal and type in: 
+sudo apt-get install python-pygame. No other installations are needed.
 
 Objective:
 Blow up your opponent before they blow YOU up!
@@ -12,10 +13,11 @@ One player has the controller WSAD and E for bombing
 
 The other player has the controller updownleftright and / for bombing
 
-Blow up crates and opponents that are in your way, but be careful! Don't walk into the line of fire or a stray bullet.
+Blow up crates and opponents that are in your way, but be careful! 
+Don't walk into the line of fire or a stray bullet.
 
-When a bomb is dropped, run away. The bomb has a fire range of 3 blocks in each direction. If you are in the line of fire,
-you lose a life!
+When a bomb is dropped, run away. The bomb has a fire range of 3 blocks in each direction. 
+If you are in the line of fire, you lose a life!
 
 Player 1 Controls:
 
