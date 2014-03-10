@@ -181,7 +181,7 @@ SQUARELENGTH = 60
 PLAYERSIZE = 50
 WHITE = (255, 255, 255)
 GRAY = (117, 117, 117)
-MOVE = SQUARELENGTH
+MOVE = 6
 DETONATION_TICK = 100
 
 # Set Event ID's
@@ -209,7 +209,7 @@ class PWFModel:
         self._populatePlayers()
 
     def update(self):
-        self.players.update()
+        self.plgit ayers.update()
         self.bombs.update()
         self.fires.update()
 
