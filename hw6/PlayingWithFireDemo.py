@@ -2,7 +2,7 @@
 """
 Created on Fri Mar  7 20:44:17 2014
 
-@author: jwei
+@author: jenwei,ryanlouie,julianmorris
 
 Wall Collision Code Adapted from:
 http://programarcadegames.com/python_examples/f.php?file=move_with_walls_example.py
