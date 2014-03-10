@@ -213,6 +213,7 @@ class PWFModel:
         self.bombs.update(self)
         self.fires.update()
 
+
     def _populateBlocks(self):
         # Populate Permanent Perimeter
         for x in range(0, WIDTH, SQUARELENGTH):
@@ -460,26 +461,32 @@ class Fire(pygame.sprite.Sprite):
             if self.direction == "N":
                 if isinstance(block, BlockDestroyable):
                     block.kill()
-                else:
+                    #time.sleep(1)
+                #else:
                     self.kill()
                     
             if self.direction == "S":
                 if isinstance(block, BlockDestroyable):
                     block.kill()
-                else:
+                    #time.sleep(1)
+                #else:
                     self.kill()
                         
             if self.direction == "W":
                 if isinstance(block, BlockDestroyable):
                     block.kill()
-                else:
+                    #time.sleep(1)
+                #else:
                     self.kill()
                         
             if self.direction == "E":
                 if isinstance(block, BlockDestroyable):
                     block.kill()
-                else:
+                    #time.sleep(1)
+                #else:
                     self.kill()
+            
+
         
 class FeetPowerUp(pygame.sprite.Sprite):
     """makes you faster"""
