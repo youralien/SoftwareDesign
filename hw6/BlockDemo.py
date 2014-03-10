@@ -10,6 +10,8 @@ http://programarcadegames.com/python_examples/f.php?file=move_with_walls_example
 
 """
 
+# --- Menu Opening Screen
+
 import sys
 import os
 import pygame
@@ -163,11 +165,7 @@ class GameMenu():
             pygame.display.flip()
  
 
-
-
-
-
-
+# --- Playing With Fire Game Board
 
 
 import pygame
@@ -183,7 +181,7 @@ SQUARELENGTH = 60
 PLAYERSIZE = 50
 WHITE = (255, 255, 255)
 GRAY = (117, 117, 117)
-MOVE = 6
+MOVE = SQUARELENGTH
 DETONATION_TICK = 100
 
 # Set Event ID's
@@ -448,32 +446,28 @@ class Fire(pygame.sprite.Sprite):
                 
         for block in block_hit_list:
             if self.direction == "N":
-                if self.rect.x  == block.rect.x and self.rect.y == block.rect.y + SQUARELENGTH:
-                    if isinstance(block, BlockDestroyable):
-                        block.kill()
-                    else:
-                        self.kill()
+                if isinstance(block, BlockDestroyable):
+                    block.kill()
+                else:
+                    self.kill()
                     
             if self.direction == "S":
-                if self.rect.x  == block.rect.x and self.rect.y == block.rect.y - SQUARELENGTH:
-                    if isinstance(block, BlockDestroyable):
-                        block.kill()
-                    else:
-                        self.kill()
+                if isinstance(block, BlockDestroyable):
+                    block.kill()
+                else:
+                    self.kill()
                         
             if self.direction == "W":
-                if self.rect.x  == block.rect.x + SQUARELENGTH and self.rect.y == block.rect.y:
-                    if isinstance(block, BlockDestroyable):
-                        block.kill()
-                    else:
-                        self.kill()
+                if isinstance(block, BlockDestroyable):
+                    block.kill()
+                else:
+                    self.kill()
                         
             if self.direction == "E":
-                if self.rect.x  == block.rect.x - SQUARELENGTH and self.rect.y == block.rect.y:
-                    if isinstance(block, BlockDestroyable):
-                        block.kill()
-                    else:
-                        self.kill()
+                if isinstance(block, BlockDestroyable):
+                    block.kill()
+                else:
+                    self.kill()
         
 class FeetPowerUp(pygame.sprite.Sprite):
     """makes you faster"""
@@ -586,7 +580,7 @@ def main():
                         model.player1.changespeed(0,MOVE)
                     elif event.key == pygame.K_SLASH:
                         if model.player1.bombs>0:
-                            model.player1.bombs -= 1.0
+                            # model.player1.bombs -= 1.0
                             
                             bomb = Bomb(model.player1.rect.x, model.player1.rect.y,13000,1)
                             model.bombs.add(bomb)
@@ -612,11 +606,20 @@ def main():
                         model.player2.changespeed(0,MOVE)
                     elif event.key == pygame.K_e:
                         if model.player2.bombs>0:
-                            model.player2.bombs -= 1.0
+                            # model.player2.bombs -= 1.0
                             
-                            bomb = Bomb(model.player2.rect.x, model.player2.rect.y,13000,2)
+                            bomb = Bomb(model.player2.rect.x, model.player2.rect.y,13000,1)
                             model.bombs.add(bomb)
                             model.everything.add(bomb)
+
+                            Fireup=Fire(model,bomb.rect.x,bomb.rect.y-SQUARELENGTH, 'N')
+                            Firedown=Fire(model,bomb.rect.x,bomb.rect.y+SQUARELENGTH, 'S')
+                            Fireleft=Fire(model,bomb.rect.x-SQUARELENGTH,bomb.rect.y, 'W')
+                            Fireright=Fire(model,bomb.rect.x+SQUARELENGTH,bomb.rect.y, 'E')
+                            for fire in [Fireup, Firedown, Fireleft, Fireright]:
+                                model.fires.add(fire)
+                                model.everything.add(fire)
+
 
 
                 elif event.type == pygame.KEYUP:
