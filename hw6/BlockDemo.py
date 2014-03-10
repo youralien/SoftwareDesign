@@ -187,7 +187,33 @@ TIMEDELAY = 2500 #in milliseconds
 # Set Event ID's
 K_BOMB_TIMER = 25
 
+# --- Utility Functions
 
+def closestLattice(x,y,lattice_distance):
+    """ Finds the closest lattice point, where
+
+    x: x coordinate in pixels
+    y: y coordinate in pixels
+    lattice_distance: distance between nodes on a lattice
+
+    """
+
+    x_mod = x % lattice_distance
+    y_mod = y % lattice_distance
+
+    if x_mod < .5*lattice_distance:
+        xlattice = x - x_mod
+    else:
+        xlattice = x + (lattice_distance - x_mod)
+
+    if y_mod < .5*lattice_distance:
+        ylattice = y - y_mod
+    else:
+        ylattice = y + (lattice_distance - y_mod)
+
+    return (xlattice, ylattice)
+    
+# --- Model
 
 class PWFModel:
     """This class encodes the game state"""
@@ -252,13 +278,9 @@ class PWFModel:
                     block = BlockDestroyable(x,y)
                     self.blocks.add(block)
                     self.everything.add(block)
-        
-        # Create a powerup
-        #powerup = FeetPowerUp(2*SQUARELENGTH, SQUARELENGTH)
-        #self.everything.add(powerup)
 
     def _populatePlayers(self):
-        # player number determined by starting quadrant
+        # Player number determined by starting quadrant
         self.player1 = Player(WIDTH-2*SQUARELENGTH,SQUARELENGTH,bombs=1,lives=3,playeri=1)
         self.player2 = Player(SQUARELENGTH,SQUARELENGTH,bombs=1,lives=3,playeri=2)
         self.player3 = Player(SQUARELENGTH,HEIGHT-2*SQUARELENGTH,bombs=1,lives=3,playeri=3)
@@ -271,7 +293,7 @@ class PWFModel:
 # --- Classes
 
 class BlockPermanent(pygame.sprite.Sprite):
-    """This class encodes the state of the block"""
+    """This class encodes the state of a permanent block"""
     def __init__ (self,x,y):
         #Call the parent class (Sprite) constructor     
         pygame.sprite.Sprite.__init__(self)
@@ -283,7 +305,7 @@ class BlockPermanent(pygame.sprite.Sprite):
         self.rect.y = y
 
 class BlockDestroyable(pygame.sprite.Sprite):
-    """This class encodes the state of the block"""
+    """This class encodes the state of a destroyable block"""
     def __init__ (self,x,y):
         #Call the parent class (Sprite) constructor     
         pygame.sprite.Sprite.__init__(self)
@@ -303,20 +325,18 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self,x,y,bombs,lives,playeri):
         """
-        bombs: integer
-        lives: integer
+        bombs: starting number of bombs
+        lives: starting number of lives
         playeri: 1,2,3, or 4
         """
+        # Call Parent Class (Sprite)
+        pygame.sprite.Sprite.__init__(self) 
+
         self.bombs=bombs
         self.lives=lives
 
-        # Call the parent class (Sprite) constructor
-        pygame.sprite.Sprite.__init__(self) 
-     
-        # Upload Player Image, 
+        # Load respective image for playeri and scale.
         self.image = pygame.image.load('images/p{}.png'.format(playeri))
-        
-        # Resize, Set Background to Transparent
         self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
         self.image.set_colorkey(WHITE)
 
@@ -330,8 +350,11 @@ class Player(pygame.sprite.Sprite):
         self.change_y += y
 
     def update(self):
-        """ Update Player Position """
+        """ Update Player Lives, and Position"""
 
+        # Kill if No more Lives
+        # ISSUE: Lives go down proportionally to number of seconds in contact 
+        #        No buffer between being hit and recovering.
         if self.lives == 0:
             self.kill()
 
@@ -363,31 +386,35 @@ class Player(pygame.sprite.Sprite):
                 self.rect.top = block.rect.bottom
 
 class Bomb(pygame.sprite.Sprite):
-    """ Encode the state of the bomb in the Playingwithfiremodel"""
+    """ Encode the state of the Bomb"""
+
     def __init__(self, x,y,time_to_detonate, playeri):       
-        w = x%SQUARELENGTH
-        z = y%SQUARELENGTH
-        self.x= (x-w) if w<.5*SQUARELENGTH else (x+(SQUARELENGTH-w))
-        self.y= (y-z) if z<.5*SQUARELENGTH else (y+(SQUARELENGTH-z))
+        # Call the parent class (Sprite) constructor
+        pygame.sprite.Sprite.__init__(self) 
+
         self.time_to_detonate = 13 * 1000 # milliseconself.dS
         self.playeri = playeri
         
-       
-    # Call the parent class (Sprite) constructor
-        pygame.sprite.Sprite.__init__(self) 
-     
         # Upload Bomb Image, Resize, Set Background to Transparent
         self.image = pygame.image.load('images/bomb.png')
         self.image = pygame.transform.scale(self.image, (PLAYERSIZE, PLAYERSIZE))
         self.image.set_colorkey(WHITE)
 
+        # Plant bomb at the center of any grid square.
         self.rect = self.image.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
+        xlattice, ylattice = closestLattice(x,y,SQUARELENGTH)
+        self.rect.x = xlattice  
+        self.rect.y = ylattice
 
     def update(self,model):
+        """ Update and Handle Bomb's time before and at detonation """
+
+        # Let Detonation Timer Run Out
         self.time_to_detonate -= DETONATION_TICK
+
+        # Detonate
         if self.time_to_detonate <= 0:
+            # Create Explosions in all directions
             Fireup=Fire(model,self.rect.x,self.rect.y-SQUARELENGTH, 'N', self.playeri)
             Firedown=Fire(model,self.rect.x,self.rect.y+SQUARELENGTH, 'S', self.playeri)
             Fireleft=Fire(model,self.rect.x-SQUARELENGTH,self.rect.y, 'W', self.playeri)
@@ -395,6 +422,8 @@ class Bomb(pygame.sprite.Sprite):
             for fire in [Fireup, Firedown, Fireleft, Fireright]:
                 model.fires.add(fire)
                 model.everything.add(fire)
+            
+            # Bomb Disappear
             self.kill() 
 
 
@@ -452,7 +481,6 @@ class Fire(pygame.sprite.Sprite):
                 self.dN+=SQUARELENGTH
         if self.dN == self.fire_range:
                 self.kill()
-                print ("I'M IN THE FIRERANGE")
                 return
         if self.direction == "S":
             if self.dS < self.fire_range:
@@ -460,7 +488,6 @@ class Fire(pygame.sprite.Sprite):
                 self.dS+=SQUARELENGTH
             if self.dN == self.fire_range:
                 self.kill()
-                print ("I'M IN THE FIRERANGE")
                 return
         if self.direction == "W":
             if self.dW < self.fire_range:
@@ -468,7 +495,6 @@ class Fire(pygame.sprite.Sprite):
                 self.dW+=SQUARELENGTH
             if self.dN == self.fire_range:
                 self.kill()
-                print ("I'M IN THE FIRERANGE")
                 return
         if self.direction == "E":
             if self.dE < self.fire_range:
@@ -476,47 +502,41 @@ class Fire(pygame.sprite.Sprite):
                 self.dE+=SQUARELENGTH
             if self.dN == self.fire_range:
                 self.kill()
-                print ("I'M IN THE FIRERANGE")
                 return
                 
         if self.rect.left < 0 or self.rect.right > self.area.width or self.rect.top < 0 or self.rect.bottom > self.area.height:
             self.kill()
 
         for block in block_hit_list:
-            print ("I AM HERE")
+
             if self.direction == "N":
                 if isinstance(block, BlockDestroyable):
                     block.kill()
-                    #time.sleep(1)
-                #else:
                     self.kill()
                     
             if self.direction == "S":
                 if isinstance(block, BlockDestroyable):
                     block.kill()
-                    #time.sleep(1)
-                #else:
                     self.kill()
                         
             if self.direction == "W":
                 if isinstance(block, BlockDestroyable):
                     block.kill()
-                    #time.sleep(1)
-                #else:
                     self.kill()
                         
             if self.direction == "E":
                 if isinstance(block, BlockDestroyable):
                     block.kill()
-                    #time.sleep(1)
-                #else:
                     self.kill()
         
-        # Take a life away from Players hit by Bombs    
+        # Take a life away from Players hit by Bombs
+        # ISSUE: Players get taken down very quickly, proportional ot time of contact
+        #        with fire 
         for player in player_hit_list:
-            player.lives -= 1
+            player.lives -= .01
 
-        
+# --- Power Up Item Classes
+
 class FeetPowerUp(pygame.sprite.Sprite):
     """makes you faster"""
     def __init__(self, x,y,):
@@ -569,6 +589,9 @@ class LightningPowerUp(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
+
+# --- View
+
 class PWFView:
     """View of Brickbreaker rendered in a PyGame Window"""
     def __init__(self,model,screen):
@@ -583,7 +606,7 @@ class PWFView:
         
 def main():
     """
-    INSERT DOCSTRING HERE
+    Function to run the Playing with Fire Game Environment
     """
     pygame.init()
     screen = pygame.display.set_mode((WIDTH,HEIGHT))
@@ -597,8 +620,9 @@ def main():
 
     model = PWFModel()    
     view = PWFView(model,screen)   
-    # controller = PWFController(model)
     running = True
+
+    # --- Controller Logic
 
     while running:
         for event in pygame.event.get():
@@ -606,9 +630,8 @@ def main():
                 running = False
             else:
 
-                # --- Controller Logic
-
                 if event.type == pygame.KEYDOWN:
+                    
                     # Bomb Detonation
                     if event.key == K_BOMB_TIMER:
                         # for bomb in model.bombs:
@@ -632,12 +655,12 @@ def main():
                     elif event.key == pygame.K_SLASH:
                         if model.player1.bombs>0:
                             # model.player1.bombs -= 1.0
-                            
+                            # TODO: Have Delay btwn Bomb Drops
+
                             bomb = Bomb(model.player1.rect.x, model.player1.rect.y,13000,1)
                             model.bombs.add(bomb)
                             model.everything.add(bomb)            
 
-                        
                     # Player 2 Actions
                     if event.key == pygame.K_a:
                         model.player2.changespeed(-MOVE,0)
@@ -650,6 +673,7 @@ def main():
                     elif event.key == pygame.K_e:
                         if model.player2.bombs>0:
                             # model.player2.bombs -= 1.0
+                            # TODO: Have Delay btwn Bomb Drops
                             
                             bomb = Bomb(model.player2.rect.x, model.player2.rect.y,13000,2)
                             model.bombs.add(bomb)
@@ -690,12 +714,16 @@ if __name__ == "__main__":
     
     # Creating the screen
     screen = pygame.display.set_mode((640, 480), 0, 32)
- 
+    
+    # Generate Menu Items and mapped functions
     menu_items = ('Start', 'Quit')
     funcs = {'Start': main,
              'Quit': sys.exit}
- 
+    
+    # Set Captioning 
     pygame.display.set_caption('PLAYING WITH FIRE')
+
+    # Run the Game Menu
     gm = GameMenu(screen, funcs.keys(), funcs)
     gm.run()
 
