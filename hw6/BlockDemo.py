@@ -183,7 +183,7 @@ WHITE = (255, 255, 255)
 GRAY = (117, 117, 117)
 MOVE = 6
 DETONATION_TICK = 100
-
+TIMEDELAY = 2500 #in milliseconds
 # Set Event ID's
 K_BOMB_TIMER = 25
 
@@ -209,8 +209,8 @@ class PWFModel:
         self._populatePlayers()
 
     def update(self):
-        self.plgit ayers.update()
-        self.bombs.update()
+        self.players.update()
+        self.bombs.update(self)
         self.fires.update()
 
     def _populateBlocks(self):
@@ -252,9 +252,9 @@ class PWFModel:
                     self.blocks.add(block)
                     self.everything.add(block)
         
-        # powerup
-        powerup = FeetPowerUp(2*SQUARELENGTH, SQUARELENGTH)
-        self.everything.add(powerup)
+        # Create a powerup
+        #powerup = FeetPowerUp(2*SQUARELENGTH, SQUARELENGTH)
+        #self.everything.add(powerup)
 
     def _populatePlayers(self):
         # player number determined by starting quadrant
@@ -379,9 +379,16 @@ class Bomb(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
-    def update(self):
+    def update(self,model):
         self.time_to_detonate -= DETONATION_TICK
         if self.time_to_detonate <= 0:
+            Fireup=Fire(model,self.rect.x,self.rect.y-SQUARELENGTH, 'N')
+            Firedown=Fire(model,self.rect.x,self.rect.y+SQUARELENGTH, 'S')
+            Fireleft=Fire(model,self.rect.x-SQUARELENGTH,self.rect.y, 'W')
+            Fireright=Fire(model,self.rect.x+SQUARELENGTH,self.rect.y, 'E')
+            for fire in [Fireup, Firedown, Fireleft, Fireright]:
+                model.fires.add(fire)
+                model.everything.add(fire)
             self.kill() 
 
 
@@ -422,6 +429,9 @@ class Fire(pygame.sprite.Sprite):
         self.speed = [0,1] #change trajectory by changing the speed
         
     def update(self):
+        """
+            INSERT DOCSTRING HERE
+        """
         # Did the movement cause a collision with a block?
         block_hit_list = pygame.sprite.spritecollide(self,self.model.blocks,False)
         if self.direction == "N":
@@ -441,7 +451,7 @@ class Fire(pygame.sprite.Sprite):
                 self.rect.x += self.vE*SQUARELENGTH
                 self.dE+=SQUARELENGTH
                 
-            if self.rect.left < 0 or self.rect.right > self.area.width or self.rect.top < 0 or self.rect.bottom > self.area.height:
+        if self.rect.left < 0 or self.rect.right > self.area.width or self.rect.top < 0 or self.rect.bottom > self.area.height:
                 self.kill()
                 
         for block in block_hit_list:
@@ -534,6 +544,9 @@ class PWFView:
 
         
 def main():
+    """
+    INSERT DOCSTRING HERE
+    """
     pygame.init()
     screen = pygame.display.set_mode((WIDTH,HEIGHT))
 
@@ -585,14 +598,16 @@ def main():
                             bomb = Bomb(model.player1.rect.x, model.player1.rect.y,13000,1)
                             model.bombs.add(bomb)
                             model.everything.add(bomb)
-
-                            Fireup=Fire(model,bomb.rect.x,bomb.rect.y-SQUARELENGTH, 'N')
-                            Firedown=Fire(model,bomb.rect.x,bomb.rect.y+SQUARELENGTH, 'S')
-                            Fireleft=Fire(model,bomb.rect.x-SQUARELENGTH,bomb.rect.y, 'W')
-                            Fireright=Fire(model,bomb.rect.x+SQUARELENGTH,bomb.rect.y, 'E')
-                            for fire in [Fireup, Firedown, Fireleft, Fireright]:
-                                model.fires.add(fire)
-                                model.everything.add(fire)
+                            
+                            #Delay between bomb drop and explosion
+                            if (bomb.time_to_detonate < 10000):
+                                Fireup=Fire(model,bomb.rect.x,bomb.rect.y-SQUARELENGTH, 'N')
+                                Firedown=Fire(model,bomb.rect.x,bomb.rect.y+SQUARELENGTH, 'S')
+                                Fireleft=Fire(model,bomb.rect.x-SQUARELENGTH,bomb.rect.y, 'W')
+                                Fireright=Fire(model,bomb.rect.x+SQUARELENGTH,bomb.rect.y, 'E')
+                                for fire in [Fireup, Firedown, Fireleft, Fireright]:
+                                    model.fires.add(fire)
+                                    model.everything.add(fire)
 
                         
                     # Player 2 Actions
@@ -611,6 +626,16 @@ def main():
                             bomb = Bomb(model.player2.rect.x, model.player2.rect.y,13000,1)
                             model.bombs.add(bomb)
                             model.everything.add(bomb)
+
+                            #Delay between bomb drop and explosion
+                            if (bomb.time_to_detonate < 5000):
+                                Fireup=Fire(model,bomb.rect.x,bomb.rect.y-SQUARELENGTH, 'N')
+                                Firedown=Fire(model,bomb.rect.x,bomb.rect.y+SQUARELENGTH, 'S')
+                                Fireleft=Fire(model,bomb.rect.x-SQUARELENGTH,bomb.rect.y, 'W')
+                                Fireright=Fire(model,bomb.rect.x+SQUARELENGTH,bomb.rect.y, 'E')
+                                for fire in [Fireup, Firedown, Fireleft, Fireright]:
+                                    model.fires.add(fire)
+                                    model.everything.add(fire)
 
                             Fireup=Fire(model,bomb.rect.x,bomb.rect.y-SQUARELENGTH, 'N')
                             Firedown=Fire(model,bomb.rect.x,bomb.rect.y+SQUARELENGTH, 'S')
