@@ -360,9 +360,11 @@ class Player(pygame.sprite.Sprite):
 
 class Bomb(pygame.sprite.Sprite):
     """ Encode the state of the bomb in the Playingwithfiremodel"""
-    def __init__(self, x,y,time_to_detonate, playeri):
-        self.x=x
-        self.y=y
+    def __init__(self, x,y,time_to_detonate, playeri):       
+        w = x%SQUARELENGTH
+        z = y%SQUARELENGTH
+        self.x= (x-w) if w<.5*SQUARELENGTH else (x+(SQUARELENGTH-w))
+        self.y= (y-z) if z<.5*SQUARELENGTH else (y+(SQUARELENGTH-z))
         self.time_to_detonate = 13 * 1000 # milliseconself.dS
         self.playeri = playeri
         
@@ -376,8 +378,8 @@ class Bomb(pygame.sprite.Sprite):
         self.image.set_colorkey(WHITE)
 
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        self.rect.x = self.x
+        self.rect.y = self.y
 
     def update(self,model):
         self.time_to_detonate -= DETONATION_TICK
@@ -452,8 +454,8 @@ class Fire(pygame.sprite.Sprite):
                 self.dE+=SQUARELENGTH
                 
         if self.rect.left < 0 or self.rect.right > self.area.width or self.rect.top < 0 or self.rect.bottom > self.area.height:
-                self.kill()
-                
+            self.kill()
+
         for block in block_hit_list:
             if self.direction == "N":
                 if isinstance(block, BlockDestroyable):
@@ -573,14 +575,14 @@ def main():
                 if event.type == pygame.KEYDOWN:
                     # Bomb Detonation
                     if event.key == K_BOMB_TIMER:
-                        for bomb in model.bombs:
-                            # Count Down time_to_detonate
-                            bomb.time_to_detonate -= DETONATION_TICK
-                            # Time to Detonate is Now!
-                            if bomb.time_to_detonate <= 0:
+                        # for bomb in model.bombs:
+                        #     # Count Down time_to_detonate
+                        #     bomb.time_to_detonate -= DETONATION_TICK
+                        #     # Time to Detonate is Now!
+                        #     if bomb.time_to_detonate <= 0:
                                
-                                bomb.kill()
-                      
+                        #         bomb.kill()
+                        pass
                
                     # Player 1 Actions
                     if event.key == pygame.K_LEFT:
@@ -597,17 +599,7 @@ def main():
                             
                             bomb = Bomb(model.player1.rect.x, model.player1.rect.y,13000,1)
                             model.bombs.add(bomb)
-                            model.everything.add(bomb)
-                            
-                            #Delay between bomb drop and explosion
-                            if (bomb.time_to_detonate < 10000):
-                                Fireup=Fire(model,bomb.rect.x,bomb.rect.y-SQUARELENGTH, 'N')
-                                Firedown=Fire(model,bomb.rect.x,bomb.rect.y+SQUARELENGTH, 'S')
-                                Fireleft=Fire(model,bomb.rect.x-SQUARELENGTH,bomb.rect.y, 'W')
-                                Fireright=Fire(model,bomb.rect.x+SQUARELENGTH,bomb.rect.y, 'E')
-                                for fire in [Fireup, Firedown, Fireleft, Fireright]:
-                                    model.fires.add(fire)
-                                    model.everything.add(fire)
+                            model.everything.add(bomb)              
 
                         
                     # Player 2 Actions
@@ -626,26 +618,6 @@ def main():
                             bomb = Bomb(model.player2.rect.x, model.player2.rect.y,13000,1)
                             model.bombs.add(bomb)
                             model.everything.add(bomb)
-
-                            #Delay between bomb drop and explosion
-                            if (bomb.time_to_detonate < 5000):
-                                Fireup=Fire(model,bomb.rect.x,bomb.rect.y-SQUARELENGTH, 'N')
-                                Firedown=Fire(model,bomb.rect.x,bomb.rect.y+SQUARELENGTH, 'S')
-                                Fireleft=Fire(model,bomb.rect.x-SQUARELENGTH,bomb.rect.y, 'W')
-                                Fireright=Fire(model,bomb.rect.x+SQUARELENGTH,bomb.rect.y, 'E')
-                                for fire in [Fireup, Firedown, Fireleft, Fireright]:
-                                    model.fires.add(fire)
-                                    model.everything.add(fire)
-
-                            Fireup=Fire(model,bomb.rect.x,bomb.rect.y-SQUARELENGTH, 'N')
-                            Firedown=Fire(model,bomb.rect.x,bomb.rect.y+SQUARELENGTH, 'S')
-                            Fireleft=Fire(model,bomb.rect.x-SQUARELENGTH,bomb.rect.y, 'W')
-                            Fireright=Fire(model,bomb.rect.x+SQUARELENGTH,bomb.rect.y, 'E')
-                            for fire in [Fireup, Firedown, Fireleft, Fireright]:
-                                model.fires.add(fire)
-                                model.everything.add(fire)
-
-
 
                 elif event.type == pygame.KEYUP:
                     # Player 1 Reverse Actions
