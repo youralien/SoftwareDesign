@@ -7,7 +7,6 @@ Created on Fri Mar  7 20:44:17 2014
 Wall Collision Code Adapted from:
 http://programarcadegames.com/python_examples/f.php?file=move_with_walls_example.py
 
-
 """
 
 # --- Menu Opening Screen
@@ -18,6 +17,7 @@ import pygame
  
 pygame.init()
  
+#Assigning RGBs to colors
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 BLACK = (0, 0, 0)
