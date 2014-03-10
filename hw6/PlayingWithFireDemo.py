@@ -10,6 +10,9 @@ http://programarcadegames.com/python_examples/f.php?file=move_with_walls_example
 """
 
 # --- Menu Opening Screen
+"""Used code from the website below for the menu of this game.
+http://nebelprog.wordpress.com/2013/09/02/create-a-simple-game-menu-with-pygame-pt-4-connecting-it-to-functions/
+"""
 
 import sys
 import os
