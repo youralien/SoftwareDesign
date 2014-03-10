@@ -1,0 +1,10 @@
+Playing with Fire - Inspired by the original Playing with Fire and Bomberman
+
+Set-up:
+To play this game, pygame must be installed. To do this, use the terminal and type in: sudo apt-get install python-pygame. No other installations are needed.
+
+Objective:
+Blow up your opponent before they blow YOU up!
+
+
+Select the number of players and level to start the game. Blow up your opponents using bombs before they manage to kill you. Destroy blocks to leave behind power-ups which will give you special abilities when picked up. Each player has three lives so they will need to be killed three times to be eliminated. There is a 3-minute time limit in place. If you win a game, you will score the number of seconds remaining on the timer multiplied by 250, times the number of opponents in the game. Losing a game will result in that amount of points being subtracted from your score
