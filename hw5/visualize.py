@@ -2,7 +2,7 @@
 Software Design Spring 2014
 HW5 - Text Mining
 Ryan Louie and Deniz Celik
-#graded
+#graded hw5
 """
 
 import matplotlib.pyplot as plt
