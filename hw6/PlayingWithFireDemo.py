@@ -464,7 +464,7 @@ class Bomb(pygame.sprite.Sprite):
 class Fire(pygame.sprite.Sprite):
     #set up a group for the fires after shooter and target sprites set up:
     fires = pygame.sprite.RenderUpdates()
-    fire_range = SQUARELENGTH * 2
+    fire_range = SQUARELENGTH * 2 # the original range was meant to be 2 squares?
     vN = -1
     vS = 1
     vW = -1
@@ -556,7 +556,7 @@ class Fire(pygame.sprite.Sprite):
             if self.dS < self.fire_range:
                 self.rect.y += self.vS*SQUARELENGTH
                 self.dS+=SQUARELENGTH
-            if self.dN >= self.fire_range:
+            if self.dN >= self.fire_range:  # you're still checking for dN; this is why it doesn't kill itself. Fixing this will also fix your "extra" range issues
                 self.kill()
                 return
         if self.direction == "W":
@@ -761,7 +761,7 @@ def main():
                             model.bombs.add(bomb)
                             model.everything.add(bomb)
                             
-                            45
+                            45  # what is this?
 
                 elif event.type == pygame.KEYUP:
                     # Player 1 Reverse Actions
